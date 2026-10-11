@@ -1,0 +1,66 @@
+# Roadmap
+
+Work is split into phases. Each phase ends with something concrete to show the Nushell maintainers, so the plan can change based on their feedback. Later phases are kept vague on purpose.
+
+## Phase 0: Foundations
+
+Settle the format and build the tools before writing many tests.
+
+- [ ] Review how the Rust Reference handles rule identifiers and links to tests
+- [ ] Settle the rule ID format ([D6](design-decisions.md#d6-rule-ids))
+- [ ] Finalize the test format ([D4](design-decisions.md#d4-test-format))
+- [ ] Write `run.nu`: reads `NU_BIN`, runs each test in isolation, reports pass / fail / pending
+- [ ] Add `NU_VERSION` with the pinned release
+- [ ] Set up CI on Linux, macOS and Windows against the pinned release
+- [ ] Write the coverage check: rules without tests, tests pointing to missing rules
+
+## Phase 1: Pilot with the Strings chapter
+
+Prove the approach on one chapter of the lang guide.
+
+- [ ] Turn every example in the lang guide's Strings chapter into a test
+- [ ] Add edge cases: escapes, interpolation, raw strings, backtick strings, unterminated strings
+- [ ] Draft the rule text in `rules/strings.md`
+- [ ] Fix any outdated examples in the lang guide upstream
+- [ ] Record unclear or inconsistent behavior as `open-question` issues
+
+**Milestone:** post the repo in [nushell/nushell#19206](https://github.com/nushell/nushell/issues/19206) and ask whether the rule format would work inside the lang guide.
+
+## Phase 2: Core language
+
+Same process as the pilot, chapter by chapter, in roughly this order:
+
+1. Basic types and literals
+2. Operators
+3. Declarations and variable scope
+4. Flow control
+5. Custom commands
+6. Pipelines and `$in`
+
+## Phase 3: Connecting with Nushell
+
+- Run the suite against `nu --experimental-options winnow-parser` in CI, next to the default parser. Any difference is a bug in one of them.
+- Move rule text into the lang guide through pull requests, if the maintainers agree.
+- Propose running the suite in Nushell's own CI once it is stable.
+
+## Phase 4: Harder areas
+
+Platform-dependent behavior, left until the foundations are solid:
+
+- Runtime errors and how they propagate
+- External commands and argument passing, especially on Windows
+- Environment variables and their scope
+- A catalog of implementation-defined and platform-specific behavior
+
+## Phase 5: Stable core and 1.0
+
+Only together with the core team:
+
+- Which commands form a stable core set (see [nushell/nushell#12768](https://github.com/nushell/nushell/issues/12768))
+- How the suite supports the 1.0 promise that scripts keep working
+
+## Ongoing
+
+- **New releases:** bump `NU_VERSION`, rerun, and record what changed.
+- **Coverage:** keep the rules-without-tests list short.
+- **Scope:** finish chapters fully before starting new ones.
