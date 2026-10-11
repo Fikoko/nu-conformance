@@ -32,9 +32,9 @@ Tests target the current Nushell release, recorded in `NU_VERSION`. With each ne
 
 ## D4. Test format
 
-**Status:** provisional
+**Status:** decided
 
-One test per `.nu` file. Metadata lives in a comment header at the top of the file: `id`, `rule`, `expect`, and optionally `error`, `platforms` and `status`. Expected output is written in the header between `# ---` markers. See [CONTRIBUTING.md](CONTRIBUTING.md#writing-a-test) for the exact format.
+One test per `.nu` file. Metadata lives in a comment header at the top of the file: `id`, `rule` (repeatable), `expect`, and optionally `error`, `platforms` and `status`. Expected output is written in the header between `# ---` markers. See [CONTRIBUTING.md](CONTRIBUTING.md#writing-a-test) for the exact format.
 
 **Why:** one self-contained file is easier to review than a script plus a separate expected-output file. Because the header is made of comments, every test is still a valid Nushell script you can run by hand.
 
@@ -52,13 +52,19 @@ Tests print their result with `to nuon`, and the runner compares that text. Rend
 
 ## D6. Rule IDs
 
-**Status:** provisional
+**Status:** decided (following the Rust Reference)
 
-Every rule has a stable ID, and every test names the rule it checks. The working format is lowercase, dot-separated, starting with the lang guide chapter: `strings.interp.expr`.
+Every rule has an ID, and every test names the rule it checks. The format follows the [Rust Reference's rule conventions](https://rust-lang.github.io/reference/dev-guide/rules/index.html):
 
-**Why:** IDs connect rules to tests, so coverage can be checked automatically. They also let rules move into the lang guide later without breaking the tests.
+- A rule is marked with a label on its own line, `r[strings.interp.expr]`, followed by the rule text.
+- IDs are lowercase, with dots separating parts from most general to most specific. Words within a part are joined with `-`. The first part is the lang guide chapter.
+- `intro` and `syntax` are reserved names for a section's opening rule and for syntax described in words.
+- Tests reference rules with a header line (`# rule: ...`), the equivalent of rustc's `//@ reference: ...` annotation. The line can repeat, and tests should name the most specific rule available.
+- Rules don't list their tests by hand. `check.nu` derives the links, much as the Reference generates its test summary.
 
-**To do:** review how the Rust Reference formats its rule identifiers and links them to tests, and align with it where that makes sense, before many tests depend on this format.
+**Why:** IDs connect rules to tests, so coverage can be checked automatically, and they let rules move into the lang guide later without breaking the tests. Using Rust's conventions means not inventing a new scheme, and follows the model a Nushell maintainer suggested ([D11](#d11-rule-text-is-written-for-the-lang-guide)).
+
+**Note:** like Rust's, these IDs are not stable yet and may be renamed until the rules have a permanent home.
 
 ## D7. Errors: assert specific codes
 
@@ -68,11 +74,13 @@ Error tests state whether the error happens while parsing or while running, and 
 
 **Why:** a maintainer recommended checking specific `nu::parser` codes. They are fairly stable, but may change while the parser is being reworked. Keeping the code in a header field means it can be updated across all tests with a single search and replace.
 
+**How:** the runner reads the code from the first `Error: nu::...` line on stderr. The phase is decided by the code: `nu::parser::...` is a parse error, anything else is a runtime error. Nushell type-checks while parsing, so many type errors count as parse errors.
+
 ## D8. Parse-only tests
 
 **Status:** decided
 
-Some tests only check whether code parses, without running it.
+Some tests only check whether code parses, without running it (`expect: parses`). The runner uses the binary's own `nu-check` command for this.
 
 **Why:** Nushell now has two parsers (the default one and the experimental winnow parser). Parse-only tests can check both directly.
 
@@ -90,9 +98,11 @@ The runner invokes a binary given by the `NU_BIN` environment variable and looks
 
 **Status:** decided
 
-Each test runs with `--no-config-file`, in a fresh temporary directory, with a minimal fixed environment and no network. Platform-specific tests say so in `platforms`.
+Each test runs with `--no-config-file`, in a fresh temporary directory, with no network. Platform-specific tests say so in `platforms`.
 
 **Why:** results must not depend on the machine or the user running them.
+
+**Still to settle:** tests currently inherit the runner's environment variables (plus `NO_COLOR=1`). A minimal fixed environment that works the same on Windows is still to be designed.
 
 ## D11. Rule text is written for the lang guide
 

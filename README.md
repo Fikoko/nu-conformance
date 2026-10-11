@@ -15,9 +15,9 @@ The approach follows the Rust project, where the [Rust Reference](https://github
 
 ## Status
 
-Early. The project is in [Phase 0](ROADMAP.md#phase-0-foundations): setting up the test format, the runner and CI. The first chapter covered will be Strings.
+Early. The test format, runner, coverage check and CI are in place ([Phase 0](ROADMAP.md#phase-0-foundations)). The first chapter, Strings, has a handful of seed tests and is next ([Phase 1](ROADMAP.md#phase-1-pilot-with-the-strings-chapter)).
 
-Tests target the **current Nushell release**. The exact version is recorded in `NU_VERSION` (coming in Phase 0).
+Tests target the **current Nushell release**, recorded in [`NU_VERSION`](NU_VERSION).
 
 ## Related work
 
@@ -28,14 +28,24 @@ Tests target the **current Nushell release**. The exact version is recorded in `
 ## Repository layout
 
 ```
-rules/        draft rule text, one file per lang-guide chapter
+rules/        draft rule text, one file per lang guide chapter
 tests/        conformance tests, one folder per chapter
-run.nu        test runner (Phase 0)
+lib/          shared helpers for reading tests and rules
+run.nu        test runner
+check.nu      checks rule IDs and the links between rules and tests
+NU_VERSION    the Nushell release the suite targets
 ```
 
 ## Running the tests
 
-The runner is not written yet. Once it is:
+With Nushell installed:
+
+```nu
+nu run.nu      # run the tests
+nu check.nu    # check rules and test links
+```
+
+To test a different binary, such as a build with the winnow parser, set `NU_BIN`:
 
 ```nu
 NU_BIN=/path/to/nu nu run.nu

@@ -6,13 +6,15 @@ Work is split into phases. Each phase ends with something concrete to show the N
 
 Settle the format and build the tools before writing many tests.
 
-- [ ] Review how the Rust Reference handles rule identifiers and links to tests
-- [ ] Settle the rule ID format ([D6](design-decisions.md#d6-rule-ids))
-- [ ] Finalize the test format ([D4](design-decisions.md#d4-test-format))
-- [ ] Write `run.nu`: reads `NU_BIN`, runs each test in isolation, reports pass / fail / pending
-- [ ] Add `NU_VERSION` with the pinned release
-- [ ] Set up CI on Linux, macOS and Windows against the pinned release
-- [ ] Write the coverage check: rules without tests, tests pointing to missing rules
+- [x] Review how the Rust Reference handles rule identifiers and links to tests
+- [x] Settle the rule ID format ([D6](design-decisions.md#d6-rule-ids))
+- [x] Settle the test format ([D4](design-decisions.md#d4-test-format))
+- [x] Write `run.nu`: reads `NU_BIN`, runs each test in isolation, reports pass / fail / pending
+- [x] Add `NU_VERSION` with the pinned release
+- [x] Set up CI on Linux, macOS and Windows against the pinned release
+- [x] Write the coverage check (`check.nu`): rules without tests, tests pointing to missing rules
+- [ ] Confirm CI passes on all three platforms
+- [ ] Decide how to give tests a minimal fixed environment ([D10](design-decisions.md#d10-isolated-test-runs))
 
 ## Phase 1: Pilot with the Strings chapter
 
