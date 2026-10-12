@@ -4,7 +4,7 @@ Thanks for helping. This project is small and early, so the process is simple.
 
 ## Ground rules
 
-1. **Describe what `nu` does, don't decide what it should do.** Tests record the behavior of the release in `NU_VERSION`. If behavior looks wrong or inconsistent, don't change the expected result to what you think is right. Open an issue labelled `open-question` and mark the test `status: pending`.
+1. **Describe what `nu` does, don't decide what it should do.** Tests record the behavior of the release in `NU_VERSION`, even when it looks wrong. If behavior looks wrong or inconsistent, keep the test active with the current result, add an **Open question** paragraph under its rule, and add the question to [`open-questions.md`](open-questions.md).
 2. **One behavior per test.** A test that checks one thing is easy to review, and when it fails you know exactly what changed.
 3. **Every test points to a rule.** If no rule exists yet, add one in `rules/` in the same pull request.
 4. **Keep the lang guide in sync.** If you find an example in the [Language Reference Guide](https://www.nushell.sh/lang-guide/) that no longer matches `nu`, fix it upstream in [nushell/nushell.github.io](https://github.com/nushell/nushell.github.io) and link that PR in yours.
@@ -57,15 +57,18 @@ What each `expect` value checks:
 - **`runtime-error`**: the script fails with an error code that does not start with `nu::parser::` (usually `nu::shell::...`). If `error` is given, it must match exactly.
 - **`parses`**: the code parses without errors. It is not run. This uses `nu-check`.
 
-Pending tests are run and reported, but never fail the suite. If a pending test starts passing, the runner tells you so.
+`status: pending` is for tests whose expected result has been decided by the maintainers but isn't in a release yet. Pending tests are run and reported, but never fail the suite. When a pending test starts passing, the runner tells you to mark it active.
 
 Things to get right:
 
 - **Print data, not tables.** End the script with `| to nuon`. Rendered tables depend on terminal width and theme, so they make tests unreliable.
+- **Use bytes for invisible characters.** `to nuon` writes newlines and control characters as they are, which makes expected output hard to read. For those, compare bytes instead: `"a\nb" | into binary | to nuon` gives `0x[610A62]`.
 - **Only the last value is printed.** A script's output is the value of its last pipeline. To check more than one value, `print` the earlier ones: `print (1 | to nuon)`.
 - **Error tests check the code, not the message.** Messages are worded for people and change freely. Codes are more stable, though they may still change while the parser is being reworked.
 - **Some errors happen earlier than you'd expect.** Nushell checks types while parsing, so many type errors are parse errors (`nu::parser::...`), not runtime errors. Run the script and look at the code before choosing `expect`.
 - **No network, no absolute paths, no reliance on your config.** Each test runs with `--no-config-file` in a fresh temporary directory.
+- **Commands that don't exist.** To test what happens when a command isn't found, use a name that starts with `nu-conformance-`, so it can't clash with a real program.
+- **Credit the source.** A test taken from an example in the lang guide or the Book ends its ID with `-guide` or `-book`, so it's clear which documented examples are covered.
 
 See [design-decisions.md](design-decisions.md) for why the format works this way.
 

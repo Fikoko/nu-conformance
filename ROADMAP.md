@@ -13,18 +13,19 @@ Settle the format and build the tools before writing many tests.
 - [x] Add `NU_VERSION` with the pinned release
 - [x] Set up CI on Linux, macOS and Windows against the pinned release
 - [x] Write the coverage check (`check.nu`): rules without tests, tests pointing to missing rules
-- [ ] Confirm CI passes on all three platforms
+- [x] Confirm CI passes on all three platforms
 - [ ] Decide how to give tests a minimal fixed environment ([D10](design-decisions.md#d10-isolated-test-runs))
 
 ## Phase 1: Pilot with the Strings chapter
 
 Prove the approach on one chapter of the lang guide.
 
-- [ ] Turn every example in the lang guide's Strings chapter into a test
-- [ ] Add edge cases: escapes, interpolation, raw strings, backtick strings, unterminated strings
-- [ ] Draft the rule text in `rules/strings.md`
-- [ ] Fix any outdated examples in the lang guide upstream
-- [ ] Record unclear or inconsistent behavior as `open-question` issues
+- [x] Turn every string-literal example in the lang guide's Strings chapter, and the Book page it points to, into a test
+- [x] Add edge cases: escapes, interpolation, raw strings, backtick strings, bare words, unterminated strings
+- [x] Draft the rule text in `rules/strings.md`
+- [x] Record unclear or inconsistent behavior in `open-questions.md`
+- [ ] Send small fixes upstream where the guide or the Book is inaccurate
+- [ ] Check CI passes on all three platforms with the new tests
 
 **Milestone:** post the repo in [nushell/nushell#19206](https://github.com/nushell/nushell/issues/19206) and ask whether the rule format would work inside the lang guide.
 

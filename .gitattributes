@@ -1,0 +1,3 @@
+# Tests compare exact bytes, including newlines inside strings, so keep LF
+# line endings on every platform.
+* text=auto eol=lf

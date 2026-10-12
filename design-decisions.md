@@ -10,7 +10,7 @@ Status values: **decided**, **provisional** (likely to change after more review)
 
 **Status:** decided
 
-The project covers the core language: syntax, types, evaluation, scoping, pipelines and errors. Built-in commands are out of scope, except the few the language can't work without (such as `if`, `let`, `def`, `each`) and `to nuon`, which the tests use for output.
+The project covers the core language: syntax, types, evaluation, scoping, pipelines and errors. Built-in commands are out of scope, except the few the language can't work without (such as `if`, `let`, `def`, `each`) and the few the tests use to show results: `to nuon`, `into binary`, `describe`, `echo` and `print`.
 
 **Why:** the command set is large and still changing. A stable core command set is a separate, later question that needs the core team ([Phase 5](ROADMAP.md#phase-5-stable-core-and-10)).
 
@@ -18,7 +18,9 @@ The project covers the core language: syntax, types, evaluation, scoping, pipeli
 
 **Status:** decided
 
-Tests and rules record what the current release of `nu` does. When behavior looks like a bug, it is recorded as an open question and the test is marked `pending`. The project does not decide how the language should behave.
+Tests and rules record what the current release of `nu` does. When behavior looks like a bug, the test still records it as it is, and the question goes in the rule text and in [`open-questions.md`](open-questions.md). The project does not decide how the language should behave.
+
+`status: pending` is used only once the maintainers have decided on a change that isn't in a release yet. The test then holds the new expected result.
 
 **Why:** language design decisions belong to the Nushell maintainers. A suite that disagrees with `nu` on day one is not useful to anyone.
 
@@ -47,6 +49,10 @@ One test per `.nu` file. Metadata lives in a comment header at the top of the fi
 Tests print their result with `to nuon`, and the runner compares that text. Rendered tables are never compared.
 
 **Why:** table output depends on terminal width, theme and config, so comparing it makes tests unreliable.
+
+Strings containing newlines or control characters are compared as bytes, with `into binary | to nuon`, since `to nuon` writes those characters as they are.
+
+Test files always use LF line endings (set in `.gitattributes`), so that a newline written inside a string is the same byte on every platform.
 
 **Still to settle:** how to handle float formatting, dates and record key order so they don't cause flaky tests.
 

@@ -19,7 +19,7 @@ Nushell follows the same idea, with the [Language Reference Guide](https://www.n
 
 ## Status
 
-Early. The test format, runner, coverage check and CI are in place ([Phase 0](ROADMAP.md#phase-0-foundations)). The first chapter, Strings, has a handful of seed tests and is next ([Phase 1](ROADMAP.md#phase-1-pilot-with-the-strings-chapter)).
+Early. The test format, runner, coverage check and CI are in place ([Phase 0](ROADMAP.md#phase-0-foundations)). The first chapter, Strings, is drafted: 44 rules and 127 tests ([Phase 1](ROADMAP.md#phase-1-pilot-with-the-strings-chapter)). Behavior that may not be intended is listed in [open-questions.md](open-questions.md).
 
 Tests target the **current Nushell release**, recorded in [`NU_VERSION`](NU_VERSION).
 
@@ -38,6 +38,7 @@ lib/          shared helpers for reading tests and rules
 run.nu        test runner
 check.nu      checks rule IDs and the links between rules and tests
 NU_VERSION    the Nushell release the suite targets
+open-questions.md   behavior that may not be intended
 ```
 
 ## Running the tests
