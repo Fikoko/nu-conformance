@@ -11,7 +11,11 @@ Today, the only complete definition of the Nushell language is the `nu` implemen
 - **Conformance tests.** Each test is a small Nushell script with its expected output or error. The tests run `nu` as a black box, so they can check the official implementation, the experimental winnow-based parser, or any future implementation.
 - **Draft rules.** Precise statements of how the language behaves, each with a stable ID that tests refer to. They follow the chapters of the [Language Reference Guide](https://www.nushell.sh/lang-guide/) and are written so they could later be added to it.
 
-The approach follows the Rust project, where the [Rust Reference](https://github.com/rust-lang/reference) became the source of truth and the specification is growing out of it.
+## Approach, and credit to the Rust project
+
+This project borrows its approach from the Rust project. Rust didn't write its specification as a separate document. Its [spec team](https://github.com/rust-lang/spec) decided to make the [Rust Reference](https://github.com/rust-lang/reference) the source of truth and grow the specification out of it.
+
+Nushell follows the same idea, with the [Language Reference Guide](https://www.nushell.sh/lang-guide/) in the role of the Rust Reference. The way rules are labelled, named and linked to tests also follows the [Rust Reference's conventions](https://rust-lang.github.io/reference/dev-guide/rules/index.html). Thanks to the Rust Reference authors and the Rust spec team for working this out in the open.
 
 ## Status
 
