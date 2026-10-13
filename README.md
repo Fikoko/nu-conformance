@@ -1,3 +1,5 @@
+[![conformance](https://github.com/Fikoko/nu-conformance/actions/workflows/conformance.yml/badge.svg)](https://github.com/Fikoko/nu-conformance/actions/workflows/conformance.yml)
+
 # nu-conformance
 
 Conformance tests and draft specification rules for the [Nushell](https://www.nushell.sh) language.
