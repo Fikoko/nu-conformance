@@ -99,13 +99,14 @@ export def platforms-of [h: record]: nothing -> list<string> {
 }
 
 # All rule IDs defined in a rules file, with their line numbers.
-# A rule is a line containing only `r[some.rule.id]`, as in the Rust Reference.
+# A rule's label comes at the end of its text, in code style:
+#   **Defined.** Some rule text. `[some.rule.id]`
 export def rules-in [path: path]: nothing -> table {
     open --raw $path
     | lines
     | enumerate
     | each {|row|
-        let m = $row.item | str trim | parse --regex '^r\[(?<id>[^\]]+)\]$'
+        let m = $row.item | str trim | parse --regex '`\[(?<id>[A-Za-z0-9][A-Za-z0-9_.-]*\.[A-Za-z0-9_.-]+)\]`$'
         if ($m | is-empty) { null } else { {id: $m.0.id, file: $path, line: ($row.index + 1)} }
     }
     | compact

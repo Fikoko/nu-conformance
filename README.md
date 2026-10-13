@@ -1,5 +1,3 @@
-[![conformance](https://github.com/Fikoko/nu-conformance/actions/workflows/conformance.yml/badge.svg)](https://github.com/Fikoko/nu-conformance/actions/workflows/conformance.yml)
-
 # nu-conformance
 
 Conformance tests and draft specification rules for the [Nushell](https://www.nushell.sh) language.
@@ -17,7 +15,7 @@ Today, the only complete definition of the Nushell language is the `nu` implemen
 
 This project borrows its approach from the Rust project. Rust didn't write its specification as a separate document. Its [spec team](https://github.com/rust-lang/spec) decided to make the [Rust Reference](https://github.com/rust-lang/reference) the source of truth and grow the specification out of it.
 
-Nushell follows the same idea, with the [Language Reference Guide](https://www.nushell.sh/lang-guide/) in the role of the Rust Reference. The way rules are labelled, named and linked to tests also follows the [Rust Reference's conventions](https://rust-lang.github.io/reference/dev-guide/rules/index.html). Thanks to the Rust Reference authors and the Rust spec team for working this out in the open.
+Nushell follows the same idea, with the [Language Reference Guide](https://www.nushell.sh/lang-guide/) in the role of the Rust Reference. The way rules are named and linked to tests also follows the [Rust Reference's conventions](https://rust-lang.github.io/reference/dev-guide/rules/index.html). Thanks to the Rust Reference authors and the Rust spec team for working this out in the open.
 
 ## Status
 

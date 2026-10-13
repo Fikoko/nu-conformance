@@ -60,9 +60,9 @@ Test files always use LF line endings (set in `.gitattributes`), so that a newli
 
 **Status:** decided (following the Rust Reference)
 
-Every rule has an ID, and every test names the rule it checks. The format follows the [Rust Reference's rule conventions](https://rust-lang.github.io/reference/dev-guide/rules/index.html):
+Every rule has an ID, and every test names the rule it checks. The naming follows the [Rust Reference's rule conventions](https://rust-lang.github.io/reference/dev-guide/rules/index.html):
 
-- A rule is marked with a label on its own line, `r[strings.interp.expr]`, followed by the rule text.
+- The label goes at the end of the rule's text, in code style: `` `[strings.interp.expr]` ``. The Rust Reference puts `r[...]` on a line before the rule, where its book tooling turns it into an anchor. Nushell's website has no such tooling, so a label at the start was hard to read. A Nushell maintainer suggested moving it to the end.
 - IDs are lowercase, with dots separating parts from most general to most specific. Words within a part are joined with `-`. The first part is the lang guide chapter.
 - `intro` and `syntax` are reserved names for a section's opening rule and for syntax described in words.
 - Tests reference rules with a header line (`# rule: ...`), the equivalent of rustc's `//@ reference: ...` annotation. The line can repeat, and tests should name the most specific rule available.

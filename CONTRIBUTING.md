@@ -74,12 +74,13 @@ See [design-decisions.md](design-decisions.md) for why the format works this way
 
 ## Writing a rule
 
-Rules live in `rules/<chapter>.md`, one file per lang guide chapter. As in the [Rust Reference](https://rust-lang.github.io/reference/dev-guide/rules/index.html), each rule starts with a label on a line of its own, followed by its text. The text starts with the rule's level in bold:
+Rules live in `rules/<chapter>.md`, one file per lang guide chapter. Each rule is one paragraph on a single line. It starts with the rule's level in bold and ends with its label, in code style, so the label doesn't get in the way of reading:
 
 ```markdown
-r[strings.interp.expr]
-**Defined.** In an interpolated string (`$"..."`), an expression in parentheses is evaluated and its value replaces the parentheses.
+**Defined.** In an interpolated string (`$"..."`), an expression in parentheses is evaluated and its value replaces the parentheses. `[strings.interp.expr]`
 ```
+
+Extra paragraphs, such as an **Open question**, go on the following lines without a label.
 
 The level is one of:
 
@@ -91,7 +92,7 @@ You don't list a rule's tests next to it. `check.nu` works that out from the tes
 
 ### Naming rules
 
-These conventions follow the Rust Reference:
+These naming conventions follow the [Rust Reference](https://rust-lang.github.io/reference/dev-guide/rules/index.html):
 
 - Lowercase, with dots separating parts from most general to most specific: `strings.double-quoted.escapes`.
 - The first part is the lang guide chapter: `strings`, `types`, `operators` and so on.
