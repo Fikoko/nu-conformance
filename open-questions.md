@@ -69,3 +69,76 @@ let x = 'a b'    # works, $x is "a b"
 ```
 
 This matches the Book ("a backtick-quoted string in the first position of an expression will be interpreted as a command"), but it may surprise people who use backticks as a way to quote text with spaces. Is this intended?
+
+## Types
+
+### T1. Infinity compares as equal to every number
+
+Rule: [`types.float.infinity-compare`](rules/types.md)
+
+```nu
+inf == 1        # => true
+inf == -inf     # => true
+inf > 1         # => false
+1 < inf         # => false
+[1.0 inf] | math max   # => 1.0
+```
+
+This looks like a bug. Under IEEE 754, `inf > 1` is `true` and `inf == 1` is `false`. `sort` already orders infinity correctly, so the comparison operators and `math max` seem to use a different code path.
+
+### T2. There is no unary minus for expressions
+
+Rule: [`types.minus.literal-only`](rules/types.md)
+
+```nu
+-(2 + 3)            # => "-5" (a string)
+let x = 5; -$x      # => "-$x" (a string)
+0 - $x              # => -5
+```
+
+A `-` before a parenthesized expression or a variable gives a string instead of negating, and there is no error. Is a unary minus planned, or should these at least be errors?
+
+### T3. A sign makes hex, octal and binary literals into strings
+
+Rule: [`types.int.radix-sign`](rules/types.md)
+
+```nu
+-100 | describe     # => int
+-0x10 | describe    # => string
++0b11               # => runs a command named `+0b11`
+```
+
+Should `-0x10` be `-16`, or a parse error?
+
+### T4. Out-of-range integer literals become floats
+
+Rule: [`types.int.too-large`](rules/types.md)
+
+```nu
+9223372036854775807 | describe    # => int
+9223372036854775808 | describe    # => float
+9223372036854775807 + 1           # => Error: nu::shell::operator_overflow
+```
+
+A literal one past the largest integer silently becomes a float and loses precision, while arithmetic that overflows is an error. Should the literal be an error too?
+
+### T5. Underscores are accepted almost anywhere in numbers
+
+Rule: [`types.int.underscores`](rules/types.md)
+
+```nu
+[1_ 1__0 _1 0x_ff] | to nuon    # => [1, 10, 1, 255]
+```
+
+Digit separators in most languages must sit between digits. Is accepting a leading, trailing or doubled underscore intended?
+
+### T6. `inf` and `nan` ignore case, but `true` and `null` don't
+
+Rules: [`types.float.special-case`](rules/types.md), [`types.bool.literals`](rules/types.md), [`types.nothing.literal`](rules/types.md)
+
+```nu
+[INF NAN] | to nuon             # => [inf, NaN]
+[True NULL] | each { describe } # => [string, string]
+```
+
+Should the float names be case-sensitive like the other keywords?
