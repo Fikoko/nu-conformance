@@ -234,3 +234,39 @@ Rule: [`types.table.literal`](rules/types.md)
 ```
 
 There is no literal for an empty table with named columns. Is that intended?
+
+## Operators
+
+### O1. `not` binds tighter than documented
+
+Rule: [`operators.not.operand`](rules/operators.md)
+
+```nu
+not ("a" == "b")    # => true
+not "a" == "b"      # => Error: nu::shell::cant_convert (can't convert string to boolean)
+let x = 1; not $x == 2   # => same error
+```
+
+The lang guide, the Book and `help operators` all list `not` (precedence 55) below the comparison operators (80), so `not "a" == "b"` should mean `not ("a" == "b")`. The parser applies `not` to the next value only. Should the parser change, or the documentation?
+
+### O2. Ordering against `null` gives `null`
+
+Rule: [`operators.compare.null`](rules/operators.md)
+
+```nu
+null < 1 | describe    # => nothing
+let x = null; if $x < 5 { "small" }   # => Error: nu::shell::cant_convert
+null == 1              # => false
+```
+
+`==` and `!=` with `null` give a boolean, but `<`, `<=`, `>` and `>=` give `null`, and the error only appears where the result is used. Should these give `false`, or an error at the comparison?
+
+### O3. The smallest integer `mod -1` overflows
+
+Rule: [`operators.arith.overflow`](rules/operators.md)
+
+```nu
+(-9223372036854775808) mod -1   # => Error: nu::shell::operator_overflow
+```
+
+The result is `0`, which fits in 64 bits. The error comes from the underlying integer remainder check. Is it intended?

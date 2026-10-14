@@ -38,6 +38,8 @@ Same process as the pilot, chapter by chapter, in roughly this order:
    - [x] Durations, filesizes, dates, ranges, binary
    - [x] Lists, records, tables
 2. Operators
+   - [x] Arithmetic, comparison, bitwise, boolean, precedence
+   - [ ] String, membership and regex operators, assignment, spread
 3. Declarations and variable scope
 4. Flow control
 5. Custom commands
