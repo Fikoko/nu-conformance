@@ -80,7 +80,7 @@ Error tests state whether the error happens while parsing or while running, and 
 
 **Why:** a maintainer recommended checking specific `nu::parser` codes. They are fairly stable, but may change while the parser is being reworked. Keeping the code in a header field means it can be updated across all tests with a single search and replace.
 
-**How:** the runner reads the code from the first `Error: nu::...` line on stderr. The phase is decided by the code: `nu::parser::...` is a parse error, anything else is a runtime error. Nushell type-checks while parsing, so many type errors count as parse errors.
+**How:** the runner reads the code from the first `Error: nu::...` line on stderr. The phase is decided by the code: `nu::parser::...` is a parse error, `nu::compile::...` is a compile error (after parsing, before anything runs), and anything else is a runtime error. Nushell type-checks while parsing, so many type errors count as parse errors.
 
 ## D8. Parse-only tests
 

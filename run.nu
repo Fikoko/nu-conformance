@@ -107,13 +107,16 @@ def judge [h: record, run: record]: nothing -> record {
         }
         $kind => {
             let is_parse = $code != null and ($code starts-with 'nu::parser::')
+            let is_compile = $code != null and ($code starts-with 'nu::compile::')
             if not $failed {
                 {ok: false, reason: 'expected an error, but the script succeeded', detail: $out}
             } else if $code == null {
                 {ok: false, reason: 'failed without an error code', detail: $stderr_tail}
             } else if $kind == 'parse-error' and not $is_parse {
                 {ok: false, reason: $"expected a parse error, got ($code)", detail: ''}
-            } else if $kind == 'runtime-error' and $is_parse {
+            } else if $kind == 'compile-error' and not $is_compile {
+                {ok: false, reason: $"expected a compile error, got ($code)", detail: ''}
+            } else if $kind == 'runtime-error' and ($is_parse or $is_compile) {
                 {ok: false, reason: $"expected a runtime error, got ($code)", detail: ''}
             } else if $wanted_code != '' and $code != $wanted_code {
                 {ok: false, reason: $"expected ($wanted_code), got ($code)", detail: ''}

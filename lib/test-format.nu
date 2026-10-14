@@ -1,7 +1,7 @@
 # Shared helpers for reading conformance tests and rule files.
 # See CONTRIBUTING.md for the formats.
 
-export const EXPECT_VALUES = [output parse-error runtime-error parses]
+export const EXPECT_VALUES = [output parse-error compile-error runtime-error parses]
 export const PLATFORMS = [linux macos windows]
 
 # Read the comment header at the top of a test file.
@@ -67,10 +67,10 @@ export def validate-header [path: path, h: record]: nothing -> list<string> {
     if $expect == 'output' and not $h.has_block {
         $problems = $problems | append 'expect: output needs an expected-output block'
     }
-    if $expect in [parse-error runtime-error] and $h.has_block {
+    if $expect in [parse-error compile-error runtime-error] and $h.has_block {
         $problems = $problems | append 'error tests must not have an expected-output block'
     }
-    if ($h.error? | is-not-empty) and $expect not-in [parse-error runtime-error] {
+    if ($h.error? | is-not-empty) and $expect not-in [parse-error compile-error runtime-error] {
         $problems = $problems | append '`error` is only allowed in error tests'
     }
 

@@ -1,6 +1,6 @@
 # Types
 
-Draft rules for the [Types](https://www.nushell.sh/lang-guide/chapters/types/00_types_overview.html) chapter of the lang guide. This part covers integers, floats, booleans and `nothing` (null). Where the lang guide links to the Book's [Types of Data](https://www.nushell.sh/book/types_of_data.html), the Book's examples are tested too.
+Draft rules for the [Types](https://www.nushell.sh/lang-guide/chapters/types/00_types_overview.html) chapter of the lang guide. It covers integers, floats, booleans, `nothing` (null), durations, filesizes, datetimes, ranges and binary values. Where the lang guide links to the Book's [Types of Data](https://www.nushell.sh/book/types_of_data.html), the Book's examples are tested too.
 
 **Checked against:** Nushell 0.116.1.
 
@@ -8,7 +8,7 @@ Some examples on these pages use operators (`/`, `//`, `mod`, `==`). They are te
 
 Paragraphs marked **Open question** describe current behavior that may not be intended. The rules record what `nu` does today, and the questions are listed in [`open-questions.md`](../open-questions.md).
 
-**Defined.** Every value has a type. This part covers the types `int`, `float`, `bool` and `nothing`. `describe` reports a value's type by these names. `[types.intro]`
+**Defined.** Every value has a type. This chapter covers the types `int`, `float`, `bool`, `nothing`, `duration`, `filesize`, `datetime`, `range` and `binary`. `describe` reports a value's type by these names. `[types.intro]`
 
 ## Integers
 
@@ -103,3 +103,87 @@ Paragraphs marked **Open question** describe current behavior that may not be in
 **Defined.** A cell path member followed by `?` is optional. If that member is missing, the result is `null` instead of an error. `[types.nothing.optional-access]`
 
 **Defined.** Accessing a missing column without `?` is a runtime error, `nu::shell::column_not_found`. A missing value is not `null`. `[types.nothing.missing-value]`
+
+## Durations
+
+**Defined.** A duration literal is a number (integer or decimal, optionally with `-`, underscores or an exponent) followed immediately by a duration unit, with no space. The value has type `duration` and is stored as a whole number of nanoseconds. `[types.duration.literal]`
+
+**Defined.** The duration units are `ns`, `us` (also `µs` or `μs`), `ms`, `sec`, `min`, `hr`, `day` and `wk`. Units are case-sensitive, so `1Sec` is not a duration. There are no month or year units, because their length varies. `[types.duration.units]`
+
+**Defined.** A duration literal can't start with `+`. `+5sec` is not a duration. `[types.duration.sign]`
+
+**Defined.** A fractional duration that isn't a whole number of nanoseconds is truncated toward zero, so `1.5ns` is `1ns` and `0.5ns` is `0ns`. `[types.duration.precision]`
+
+**Defined.** A duration is a signed 64-bit count of nanoseconds. A literal far outside that range is a compile error, `nu::compile::invalid_literal`. `[types.duration.range]`
+
+**Open question:** a literal just past the limit doesn't fail. `9223372036854775808ns` silently becomes the largest duration, while `106752day` is an error.
+
+**Defined.** Converted to a string, a duration is broken down into its units from largest to smallest, leaving out units that are zero, for example `3day 3hr 21min 36sec`. A negative duration has a single `-` at the start. A zero duration is `0sec`. `[types.duration.display]`
+
+**Defined.** A duration can be multiplied or divided by a number, giving a duration. A duration divided by a duration gives a `float` with `/` and an `int` with `//`, and `mod` gives a duration. Durations can be compared. Adding a plain number to a duration is a parse error, `nu::parser::operator_incompatible_types`. `[types.duration.arithmetic]`
+
+## Filesizes
+
+**Defined.** A filesize literal is a number (integer or decimal, optionally with `-`, underscores or an exponent) followed immediately by a filesize unit. The value has type `filesize` and is stored as a whole number of bytes, truncating any fraction. A filesize literal can't start with `+`. `[types.filesize.literal]`
+
+**Defined.** The decimal units are `B`, `kB`, `MB`, `GB`, `TB`, `PB` and `EB`, each 1000 times the one before. `[types.filesize.decimal-units]`
+
+**Defined.** The binary units are `KiB`, `MiB`, `GiB`, `TiB`, `PiB` and `EiB`, each 1024 times the one before. `[types.filesize.binary-units]`
+
+**Defined.** Filesize units are case-insensitive, so `1KiB`, `1kib` and `1KIB` are equal, and `1b` is one byte. `[types.filesize.case-insensitive]`
+
+**Open question:** filesize units ignore case, but duration units don't (`1Sec` is not a duration).
+
+**Defined.** Inside a list, a number followed by letters ending in `b` or `B` that aren't a known unit, such as `1ZB`, is a parse error, `nu::parser::error`. `[types.filesize.unknown-unit]`
+
+**Defined.** A filesize is a signed 64-bit count of bytes. A literal far outside that range is a compile error, `nu::compile::invalid_literal`. `[types.filesize.range]`
+
+**Open question:** as with durations, a literal just past the limit doesn't fail. `8EiB` (exactly 2^63 bytes) silently becomes the largest filesize, while `10EiB` is an error.
+
+**Implementation-defined.** How a filesize is converted to a string depends on configuration. With the default configuration it uses decimal units with one decimal place, so `1500B` becomes `1.5 kB` and `1GiB` becomes `1.0 GB`. `[types.filesize.display]`
+
+**Defined.** A filesize can be multiplied or divided by a number, giving a filesize. A filesize divided by a filesize gives a `float`. Filesizes in different units compare by their number of bytes. Adding a plain number to a filesize is a parse error, `nu::parser::operator_incompatible_types`. `[types.filesize.arithmetic]`
+
+## Datetimes
+
+**Defined.** A datetime literal is an RFC 3339 date, `YYYY-MM-DD`, optionally followed by `T` (or `t`) and a time `hh:mm:ss`, optional fractional seconds, and an optional offset `Z` or `±hh:mm`. Without a time, the time is midnight. Without an offset, the value is in UTC. The value has type `datetime`. `[types.datetime.literal]`
+
+**Defined.** A literal that looks like a date but isn't a valid one, such as `2022-02-30`, `2022-2-2`, a time without seconds, or an offset without `:`, is not a datetime. In a list it is a string. A date with a leading `-` is a string, and eight digits without dashes are an integer. A space between the date and the time is a parse error, `nu::parser::parse_mismatch`. `[types.datetime.invalid]`
+
+**Open question:** an invalid date silently becomes a string rather than an error, so a typo like `2023-02-29` may go unnoticed.
+
+**Defined.** Adding a duration to a datetime gives a datetime, and subtracting two datetimes gives a duration. Datetimes compare by the moment in time they represent, so the same moment in different offsets is equal. Adding a plain number to a datetime is a parse error, `nu::parser::operator_incompatible_types`. `[types.datetime.arithmetic]`
+
+## Ranges
+
+**Defined.** A range is written `start..end`, with no spaces around `..`. The bounds may be number literals, variables or parenthesized expressions. The value has type `range`. `[types.range.literal]`
+
+**Defined.** A range includes its end value. `[types.range.inclusive]`
+
+**Defined.** A range written with `..<` stops before its end value. It also works with a second value and in descending ranges. `[types.range.exclusive]`
+
+**Defined.** A range written `start..second..end` steps by the distance between `start` and `second`. Without a second value, the step is `1`, or `-1` when the end is less than the start. Values past the end are not included. `[types.range.step]`
+
+**Defined.** A range whose step is zero, or whose step moves away from the end, can't be used. It is a runtime error, `nu::shell::range_to_countable`. `[types.range.bad-step]`
+
+**Defined.** If any bound is a float, the range produces floats. `[types.range.float]`
+
+**Defined.** A float range without a second value whose start and end are less than `1` apart steps by a power of ten based on the size of the difference, so `0.1..0.3` steps by `0.1` and `0.0..0.05` steps by `0.01`. `[types.range.float-small-step]`
+
+**Defined.** The start of a range is optional and defaults to `0`. The end is optional, and a range without an end is infinite. `[types.range.open]`
+
+**Defined.** A range is lazy: its values are produced only when needed. A range stays a `range` when stored in a variable, passed through `collect` or put in a list, and two ranges with the same bounds are equal. Commands such as `each` produce a list from it. `[types.range.lazy]`
+
+## Binary
+
+**Defined.** A binary literal is `0x[...]` with hex digits, `0o[...]` with octal digits, or `0b[...]` with binary digits. Hex digits may be upper or lower case. The value has type `binary`. `0x[]` is empty. `[types.binary.literal]`
+
+**Defined.** Spaces and commas inside the brackets are ignored. `[types.binary.separators]`
+
+**Defined.** If the digits don't make up a whole number of bytes, the value is padded with zeros on the left. Padding applies to the literal as a whole, after separators are removed, so `0x[1 23]` is `0x[0123]`. `[types.binary.padding]`
+
+**Defined.** In an octal binary literal, each byte is three octal digits from `000` to `377`. More digits than fit, or a value above `377`, is a parse error, `nu::parser::invalid_binary_string`. `[types.binary.octal-bytes]`
+
+**Defined.** A digit not valid for the prefix, an underscore, or a nested prefix such as `0x[0x01]` is a parse error, `nu::parser::invalid_binary_string`. A missing `]` is a parse error, `nu::parser::unclosed_delimiter`. `[types.binary.invalid]`
+
+**Defined.** Binary values are joined with `++`. `+` is not supported for binary and is a parse error, `nu::parser::operator_unsupported_type`. `[types.binary.arithmetic]`

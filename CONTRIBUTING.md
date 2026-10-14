@@ -45,7 +45,7 @@ The header fields are:
 |-------------|----------|---------|
 | `id`        | yes      | Unique test ID. Must match the file name. |
 | `rule`      | yes      | The rule this test checks. Repeat the line if a test covers more than one rule. |
-| `expect`    | yes      | `output`, `parse-error`, `runtime-error` or `parses`. |
+| `expect`    | yes      | `output`, `parse-error`, `compile-error`, `runtime-error` or `parses`. |
 | `error`     | no       | For error tests: the exact error code, e.g. `nu::parser::unclosed_delimiter`. |
 | `platforms` | no       | `all` (default), or a comma-separated list of `linux`, `macos`, `windows`. |
 | `status`    | no       | `active` (default) or `pending`. |
@@ -54,7 +54,8 @@ What each `expect` value checks:
 
 - **`output`**: the script succeeds and its output matches the block between the two `# ---` lines (one `# ` prefix per line). Trailing newlines and Windows line endings are ignored.
 - **`parse-error`**: the script fails with an error code starting with `nu::parser::`. If `error` is given, the code must match it exactly.
-- **`runtime-error`**: the script fails with an error code that does not start with `nu::parser::` (usually `nu::shell::...`). If `error` is given, it must match exactly.
+- **`compile-error`**: the script fails with an error code starting with `nu::compile::`. These errors come after parsing but before anything runs, so `nu-check` still reports the code as valid. If `error` is given, it must match exactly.
+- **`runtime-error`**: the script fails with an error code that starts with neither `nu::parser::` nor `nu::compile::` (usually `nu::shell::...`). If `error` is given, it must match exactly.
 - **`parses`**: the code parses without errors. It is not run. This uses `nu-check`.
 
 `status: pending` is for tests whose expected result has been decided by the maintainers but isn't in a release yet. Pending tests are run and reported, but never fail the suite. When a pending test starts passing, the runner tells you to mark it active.

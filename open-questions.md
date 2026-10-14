@@ -142,3 +142,51 @@ Rules: [`types.float.special-case`](rules/types.md), [`types.bool.literals`](rul
 ```
 
 Should the float names be case-sensitive like the other keywords?
+
+### T7. Literals just past the 64-bit limit saturate instead of failing
+
+Rules: [`types.duration.range`](rules/types.md), [`types.filesize.range`](rules/types.md)
+
+```nu
+9223372036854775808ns | to nuon   # => 9223372036854775807ns (silently the largest value)
+106752day                         # => Error: nu::compile::invalid_literal
+8EiB | to nuon                    # => 9223372036854775807b (silently the largest value)
+10EiB                             # => Error: nu::compile::invalid_literal
+```
+
+The limit check seems to let through values exactly at 2^63, which then saturate. This may be the same floating-point comparison issue in both places.
+
+### T8. Invalid dates silently become strings
+
+Rule: [`types.datetime.invalid`](rules/types.md)
+
+```nu
+[2024-02-29] | describe    # => list<datetime>
+[2023-02-29] | describe    # => list<string>
+2023-02-29                 # => runs a command named `2023-02-29`
+```
+
+A typo in a date literal gives a string instead of an error. Should something that looks like a date but isn't valid be a parse error?
+
+### T9. Duration units are case-sensitive, filesize units are not
+
+Rules: [`types.duration.units`](rules/types.md), [`types.filesize.case-insensitive`](rules/types.md)
+
+```nu
+[1KIB 1kib] | to nuon     # => [1024b, 1024b]
+[1Sec 1SEC] | describe    # => list<string>
+```
+
+Should the two kinds of unit follow the same rule?
+
+### T10. `+` works on plain numbers but not on durations or filesizes
+
+Rules: [`types.duration.sign`](rules/types.md), [`types.filesize.literal`](rules/types.md)
+
+```nu
++50 | describe       # => int
+[+5sec] | describe   # => list<string>
+[+1kB] | describe    # => list<string>
+```
+
+This is related to T3: a sign is accepted in some literal forms and not others.

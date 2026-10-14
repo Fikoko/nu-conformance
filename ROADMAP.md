@@ -35,7 +35,7 @@ Same process as the pilot, chapter by chapter, in roughly this order:
 
 1. Basic types and literals
    - [x] Integers, floats, booleans, null
-   - [ ] Durations, filesizes, dates, ranges, binary
+   - [x] Durations, filesizes, dates, ranges, binary
    - [ ] Lists, records, tables
 2. Operators
 3. Declarations and variable scope
