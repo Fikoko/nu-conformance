@@ -86,7 +86,7 @@ Paragraphs marked **Open question** describe current behavior that may not be in
 
 ## Booleans
 
-**Defined.** `true` and `false` are the two values of type `bool`. They are case-sensitive: `True`, `TRUE` and `False` are strings, and `True` at the start of a pipeline is a command name. `[types.bool.literals]`
+**Defined.** `true` and `false` are the two values of type `bool`. They are case-sensitive: `True`, `TRUE` and `False` are strings. `[types.bool.literals]`
 
 **Defined.** Comparisons produce a `bool`, which can be stored in a variable declared `bool` or used as the condition of `if`. `[types.bool.comparison]`
 
