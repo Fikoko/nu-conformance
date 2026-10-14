@@ -1,6 +1,6 @@
 # Types
 
-Draft rules for the [Types](https://www.nushell.sh/lang-guide/chapters/types/00_types_overview.html) chapter of the lang guide. It covers integers, floats, booleans, `nothing` (null), durations, filesizes, datetimes, ranges and binary values. Where the lang guide links to the Book's [Types of Data](https://www.nushell.sh/book/types_of_data.html), the Book's examples are tested too.
+Draft rules for the [Types](https://www.nushell.sh/lang-guide/chapters/types/00_types_overview.html) chapter of the lang guide. It covers integers, floats, booleans, `nothing` (null), durations, filesizes, datetimes, ranges, binary values, lists, records and tables. Where the lang guide links to the Book's [Types of Data](https://www.nushell.sh/book/types_of_data.html), the Book's examples are tested too.
 
 **Checked against:** Nushell 0.116.1.
 
@@ -8,7 +8,7 @@ Some examples on these pages use operators (`/`, `//`, `mod`, `==`). They are te
 
 Paragraphs marked **Open question** describe current behavior that may not be intended. The rules record what `nu` does today, and the questions are listed in [`open-questions.md`](../open-questions.md).
 
-**Defined.** Every value has a type. This chapter covers the types `int`, `float`, `bool`, `nothing`, `duration`, `filesize`, `datetime`, `range` and `binary`. `describe` reports a value's type by these names. `[types.intro]`
+**Defined.** Every value has a type. This chapter covers the types `int`, `float`, `bool`, `nothing`, `duration`, `filesize`, `datetime`, `range`, `binary`, `list`, `record` and `table`. `describe` reports a value's type by these names. `[types.intro]`
 
 ## Integers
 
@@ -187,3 +187,59 @@ Paragraphs marked **Open question** describe current behavior that may not be in
 **Defined.** A digit not valid for the prefix, an underscore, or a nested prefix such as `0x[0x01]` is a parse error, `nu::parser::invalid_binary_string`. A missing `]` is a parse error, `nu::parser::unclosed_delimiter`. `[types.binary.invalid]`
 
 **Defined.** Binary values are joined with `++`. `+` is not supported for binary and is a parse error, `nu::parser::operator_unsupported_type`. `[types.binary.arithmetic]`
+
+## Lists
+
+**Defined.** A list literal is written `[...]` and holds zero or more values in order. `[]` is an empty list. Lists can contain any values, including other lists and `null`. A missing `]` is a parse error, `nu::parser::unclosed_delimiter`. `[types.list.literal]`
+
+**Defined.** List items may be separated by commas, spaces or line breaks, in any mix. Extra commas, including leading and trailing ones, are ignored. Comments may appear between items. A `;` is not a list separator and is a parse error, `nu::parser::error`. `[types.list.separators]`
+
+**Defined.** Each item in a list is a separate value, so `[1 + 1]` is the list `[1, "+", 1]` and `[1+1]` is the list `["1+1"]`. To use an expression as an item, put it in parentheses: `[(1 + 1)]` is `[2]`. `[types.list.items]`
+
+**Defined.** An extra `]` directly after a list item becomes part of that item. `[1 2]]` is the list `[1, "2]"]`, not an error. `[types.list.extra-close]`
+
+**Open question:** a stray `]` silently changes the data instead of being reported.
+
+**Defined.** A list's type is `list<T>`, where `T` is the common type of its items: `int` for integers, `number` for a mix of integers and floats, `oneof<...>` for other mixes, and `any` for an empty list. `[types.list.type]`
+
+**Defined.** List items are numbered from `0`. Accessing an index past the end is a runtime error, `nu::shell::access_beyond_end`. `[types.list.index]`
+
+**Defined.** Inside a list literal, `...` followed directly by a list, with no space, inserts that list's items. With a space, `...` is an ordinary string item. Spreading a value that isn't a list is a runtime error, `nu::shell::cannot_spread_as_list`. `[types.list.spread]`
+
+**Defined.** `++` joins two lists, and both sides must be lists, otherwise it is a parse error, `nu::parser::operator_unsupported_type`. `in`, `not-in`, `has` and `not-has` test whether a value is in a list. Two lists are equal if they have equal items in the same order, so `[1] == [1.0]` is `true`. `[types.list.operators]`
+
+## Records
+
+**Defined.** A record literal is written `{...}` with `key: value` pairs. `{}` is an empty record. A record's type is `record<key: type, ...>`. A key without a value, as in `{a:}`, is a parse error, `nu::parser::parse_mismatch`, and a missing `}` is a parse error, `nu::parser::unclosed_delimiter`. Braces around a word with no `:`, such as `{a}`, are a closure, not a record. `[types.record.literal]`
+
+**Defined.** Pairs may be separated by commas, spaces or line breaks, and extra commas are ignored. Spaces before or after the `:` are optional. `[types.record.separators]`
+
+**Defined.** A key is a bare word, a quoted string or an interpolated string, a variable, or a parenthesized expression. A bare key may contain `-` and `.`. A bare number used as a key becomes a string. `true`, `false` and `null` can't be bare keys, which is a parse error, `nu::parser::parse_mismatch_with_full_string_msg`. `[types.record.keys]`
+
+**Open question:** a number is accepted as a bare record key, but `true` and `null` aren't, and numbers aren't accepted as table column names ([`types.table.literal`](#tables)).
+
+**Defined.** A value is a single item, like a list item. An expression such as `1 + 1` must be in parentheses, otherwise it is a parse error, `nu::parser::error`. `[types.record.values]`
+
+**Defined.** A record keeps its keys in the order they were written. Two records are equal if they have the same keys with equal values, in any order. `[types.record.order]`
+
+**Defined.** A key may appear only once. Writing the same key twice is an error, `nu::shell::column_defined_twice`. It is reported when the record is evaluated, not when the code is parsed, so code before it runs first. `merge` replaces the values of existing keys. `[types.record.duplicate-keys]`
+
+**Open question:** a duplicate key in a literal could be found while parsing, but today it is a runtime error.
+
+**Defined.** Inside a record literal, `...` followed directly by a record inserts its pairs. A spread key that is also written directly, before or after it, is a duplicate key, `nu::shell::column_defined_twice`. `[types.record.spread]`
+
+**Defined.** A key is accessed with a cell path, `$record.key`, including directly on a literal. A missing key is a runtime error, `nu::shell::column_not_found`. `[types.record.access]`
+
+## Tables
+
+**Defined.** A table literal is written `[[headers]; [row] [row] ...]`: a list of column names, a `;`, then one list per row. Column names may be bare words, quoted strings or variables, but not numbers, which is a parse error, `nu::parser::error`. A row that isn't a list is a parse error, `nu::parser::error`. Without the `;`, it is a list of lists. A table literal must have at least one row, so `[[a b];]` is a parse error, `nu::parser::parse_mismatch`. `[types.table.literal]`
+
+**Open question:** there is no way to write an empty table with named columns as a literal.
+
+**Defined.** Every row must have exactly as many values as there are columns. Fewer is a parse error, `nu::parser::missing_columns`, and more is a parse error, `nu::parser::extra_columns`. `[types.table.row-length]`
+
+**Defined.** A column name may appear only once. A duplicate is a runtime error, `nu::shell::column_defined_twice`. `[types.table.duplicate-header]`
+
+**Defined.** A list whose items are all records is a table, and a table literal is equal to the list of records it describes. Its type is `table<column: type, ...>`, or just `table` when the records have different keys. A list that also contains values other than records is a list, not a table. `[types.table.list-of-records]`
+
+**Defined.** A row of a table is a record. A column name in a cell path gives the list of that column's values. A row number and a column name can be given in either order. `[types.table.access]`

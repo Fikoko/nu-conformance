@@ -190,3 +190,47 @@ Rules: [`types.duration.sign`](rules/types.md), [`types.filesize.literal`](rules
 ```
 
 This is related to T3: a sign is accepted in some literal forms and not others.
+
+### T11. A stray `]` becomes part of a list item
+
+Rule: [`types.list.extra-close`](rules/types.md)
+
+```nu
+[1 2]] | to nuon    # => [1, "2]"]
+```
+
+An extra closing bracket silently turns the last item into a string instead of being reported. Should this be a parse error?
+
+### T12. Which bare words can be record keys and column names
+
+Rules: [`types.record.keys`](rules/types.md), [`types.table.literal`](rules/types.md)
+
+```nu
+{1: one} | columns   # => ["1"]
+{true: 1}            # => Error: nu::parser::parse_mismatch_with_full_string_msg
+[[1 2]; [3 4]]       # => Error: nu::parser::error (must be a string)
+```
+
+A number works as a record key but not as a table column name, and `true` and `null` work as neither. Should these follow one rule?
+
+### T13. Duplicate keys in a literal are found at runtime
+
+Rules: [`types.record.duplicate-keys`](rules/types.md), [`types.table.duplicate-header`](rules/types.md)
+
+```nu
+print before; {a: 1, a: 2}
+# => before
+# => Error: nu::shell::column_defined_twice
+```
+
+The duplicate is visible in the source, but the error only comes when the record is evaluated, after earlier code has run. Should duplicate literal keys be a parse error?
+
+### T14. A table literal can't have zero rows
+
+Rule: [`types.table.literal`](rules/types.md)
+
+```nu
+[[a b];]    # => Error: nu::parser::parse_mismatch (expected table row)
+```
+
+There is no literal for an empty table with named columns. Is that intended?

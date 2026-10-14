@@ -21,7 +21,7 @@ Nushell follows the same idea, with the [Language Reference Guide](https://www.n
 
 ## Status
 
-Early. The test format, runner, coverage check and CI are in place ([Phase 0](ROADMAP.md#phase-0-foundations)). The Strings chapter is drafted (44 rules, 127 tests), and the Types chapter covers the basic types: integers, floats, booleans, null, durations, filesizes, datetimes, ranges and binary (69 rules, 218 tests). Lists, records and tables are next. See [ROADMAP.md](ROADMAP.md). Behavior that may not be intended is listed in [open-questions.md](open-questions.md).
+Early. The test format, runner, coverage check and CI are in place ([Phase 0](ROADMAP.md#phase-0-foundations)). The Strings chapter is drafted (44 rules, 127 tests), and the Types chapter is drafted too, from integers to tables (90 rules, 303 tests). Operators are next. See [ROADMAP.md](ROADMAP.md). Behavior that may not be intended is listed in [open-questions.md](open-questions.md).
 
 Tests target the **current Nushell release**, recorded in [`NU_VERSION`](NU_VERSION).
 
