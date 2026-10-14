@@ -270,3 +270,15 @@ Rule: [`operators.arith.overflow`](rules/operators.md)
 ```
 
 The result is `0`, which fits in 64 bits. The error comes from the underlying integer remainder check. Is it intended?
+
+### O4. `in` is stricter about number types than `==`
+
+Rule: [`operators.member.types`](rules/operators.md)
+
+```nu
+1 == 1.0          # => true
+[1] == [1.0]      # => true
+1 in [1.0]        # => Error: nu::parser::operator_incompatible_types
+```
+
+Integers and floats compare equal everywhere else. Should `in` accept an integer in a list of floats (and the reverse)?
