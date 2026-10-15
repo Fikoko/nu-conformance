@@ -41,6 +41,7 @@ Same process as the pilot, chapter by chapter, in roughly this order:
    - [x] Arithmetic, comparison, bitwise, boolean, precedence
    - [x] String, membership and regex operators, assignment, spread
 3. Declarations and variable scope
+   - [x] `let`, `mut`, `const`, `unlet`, names, blocks, closures, custom commands, environment
 4. Flow control
 5. Custom commands
 6. Pipelines and `$in`

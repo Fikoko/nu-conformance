@@ -282,3 +282,50 @@ Rule: [`operators.member.types`](rules/operators.md)
 ```
 
 Integers and floats compare equal everywhere else. Should `in` accept an integer in a list of floats (and the reverse)?
+
+## Declarations and scope
+
+### D1. `unlet` on a constant does nothing
+
+Rule: [`declarations.unlet.const`](rules/declarations.md)
+
+```nu
+const x = 1; unlet $x; $x    # => 1
+let y = 1; unlet $y; $y      # => Error: nu::shell::variable_not_found
+```
+
+There is no error, and the constant is still there. Should `unlet` delete constants, or reject them?
+
+### D2. `unlet $in` is accepted
+
+Rule: [`declarations.unlet.builtins`](rules/declarations.md)
+
+```nu
+unlet $nu    # => Error: nu::compile::invalid_literal
+unlet $in    # => no error
+```
+
+The lang guide says `$in` is a built-in variable that can't be deleted.
+
+### D3. `where` can use `mut` variables, unlike other closures
+
+Rule: [`scope.closure.where`](rules/scope.md)
+
+```nu
+mut x = 1
+[1 2] | where {|v| $v > $x }   # => [2]
+[1 2] | each {|v| $v > $x }    # => Error: nu::parser::expected_keyword (capture of mutable variable)
+```
+
+The lang guide lists `where` among the commands whose closures can't capture `mut` variables. Is `where` meant to be an exception?
+
+### D4. List item types in annotations are checked only at runtime
+
+Rule: [`declarations.let.annotation-items`](rules/declarations.md)
+
+```nu
+let x: int = "ten"            # => Error: nu::parser::type_mismatch
+let x: list<int> = [1 "a"]    # => Error: nu::shell::type_mismatch (at runtime)
+```
+
+The item types of the literal are known while parsing. Should this be a parse error too?
