@@ -21,7 +21,7 @@ Nushell follows the same idea, with the [Language Reference Guide](https://www.n
 
 ## Status
 
-Early. The test format, runner, coverage check and CI are in place ([Phase 0](ROADMAP.md#phase-0-foundations)). The Strings chapter is drafted (44 rules, 127 tests), the Types chapter is drafted too, from integers to tables (90 rules, 303 tests), the Operators chapter is drafted (45 rules, 158 tests), and so are Declarations (18 rules, 64 tests) and Variable Scope (13 rules, 48 tests). Flow control is next. See [ROADMAP.md](ROADMAP.md). Behavior that may not be intended is listed in [open-questions.md](open-questions.md).
+Early. The test format, runner, coverage check and CI are in place ([Phase 0](ROADMAP.md#phase-0-foundations)). The Strings chapter is drafted (44 rules, 127 tests), the Types chapter is drafted too, from integers to tables (90 rules, 303 tests), the Operators chapter is drafted (45 rules, 158 tests), and so are Declarations (18 rules, 64 tests) and Variable Scope (13 rules, 48 tests). Flow control is in progress, with `if`, loops, `break` and `continue` done (19 rules, 82 tests). See [ROADMAP.md](ROADMAP.md). Behavior that may not be intended is listed in [open-questions.md](open-questions.md).
 
 Tests target the **current Nushell release**, recorded in [`NU_VERSION`](NU_VERSION).
 

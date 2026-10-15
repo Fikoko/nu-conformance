@@ -329,3 +329,40 @@ let x: list<int> = [1 "a"]    # => Error: nu::shell::type_mismatch (at runtime)
 ```
 
 The item types of the literal are known while parsing. Should this be a parse error too?
+
+## Flow control
+
+### F1. `for` over a record runs once with the whole record
+
+Rule: [`flow.for.single-value`](rules/flow.md)
+
+```nu
+for x in {a: 1, b: 2} { print ($x | to nuon) }   # => {a: 1, b: 2} (one iteration)
+for x in 5 { print $x }                           # => 5 (one iteration)
+for x in null { print $x }                        # => (no iterations)
+```
+
+Anything that isn't a list, range or table is iterated as a single item, and `null` as no items. Is that intended, or should a record iterate over its key-value pairs, and other values be an error?
+
+### F2. `for` can't start a pipeline, but `while` and `loop` can
+
+Rule: [`flow.for.statement`](rules/flow.md)
+
+```nu
+while false { } | describe      # => nothing
+loop { break } | describe       # => nothing
+for x in [1] { } | describe     # => Error: nu::parser::unexpected_keyword
+```
+
+All three are statements that produce `null`. Should they follow the same rule?
+
+### F3. A non-boolean condition gives different errors in `if` and `while`
+
+Rules: [`flow.if.condition`](rules/flow.md), [`flow.while.condition`](rules/flow.md)
+
+```nu
+if 1 { }       # => Error: nu::shell::cant_convert
+while 1 { }    # => Error: nu::shell::type_mismatch
+```
+
+The same mistake gives two different error codes. Should they be the same?
