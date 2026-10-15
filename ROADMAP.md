@@ -46,6 +46,8 @@ Same process as the pilot, chapter by chapter, in roughly this order:
    - [x] `if`/`else`, `for`, `while`, `loop`, `break`, `continue`
    - [x] `match`, `try`/`catch`/`finally`, `return`
 5. Custom commands
+   - [x] Defining and calling, names, shadowing, parameters, flags, rest, closures
+   - [ ] Input/output types, `def --wrapped`, documentation, attributes
 6. Pipelines and `$in`
 
 ## Phase 3: Connecting with Nushell

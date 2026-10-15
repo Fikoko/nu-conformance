@@ -1,0 +1,87 @@
+# Custom Commands
+
+Draft rules for the [Custom Commands](https://www.nushell.sh/lang-guide/chapters/custom_commands.html) chapter of the lang guide, and the Book's [Custom Commands](https://www.nushell.sh/book/custom_commands.html) page it points to. This part covers defining and calling commands, names, shadowing, parameters, flags, rest parameters and closures. Input and output types, `def --wrapped`, documentation and attributes are in part 2.
+
+**Checked against:** Nushell 0.116.1.
+
+Where a command's body can see variables, and how `def --env` works, is covered in [Variable Scope](scope.md#custom-commands). `return` is covered in [Flow Control](flow.md#return), and spreading arguments in [Operators](operators.md#spread).
+
+Paragraphs marked **Open question** describe current behavior that may not be intended. The rules record what `nu` does today, and the questions are listed in [`open-questions.md`](../open-questions.md).
+
+**Defined.** `def name [parameters] { body }` defines a custom command, which is then called like a built-in command. Arguments and flags are parsed and type-checked while parsing. `[commands.intro]`
+
+## Defining and calling
+
+**Defined.** A custom command is called by its name followed by its arguments. A command can call itself. `[commands.def.basic]`
+
+**Defined.** The result of a command is the value of the last expression in its body. If the last expression is a statement such as `for`, the result is `null`. An empty body passes its input through, so it gives `null` without input. `[commands.def.result]`
+
+**Defined.** Pipeline input to a command is available in its body as `$in`, and a command at the start of its body receives that input, so `def double [] { each {|n| 2 * $n } }` works on a list. Input is streamed: a command can process an infinite stream when the rest of the pipeline stops early. If the command declares input types, other input is a parse error, `nu::parser::input_type_mismatch`. `[commands.def.input]`
+
+## Names
+
+**Defined.** A command name may contain letters from any script, digits, `-` and emoji. `[commands.names.characters]`
+
+**Defined.** Parser keywords, such as `if`, `for`, `let`, `def`, `use` and `where`, can't be command names. That is a parse error, `nu::parser::name_is_keyword`. `[commands.names.keywords]`
+
+**Defined.** The name must be written in the definition. A variable as the name is a parse error, `nu::parser::unknown_state`. `[commands.names.static]`
+
+**Defined.** A name with a space defines a subcommand, such as `def "str shout"`, which is called with the words separated by a space. The first word alone is not a command. `[commands.names.subcommands]`
+
+## Shadowing
+
+**Defined.** A custom command may have the same name as a built-in command, and then calling the name runs the custom command. `%name` calls the built-in, also with a variable (`%$cmd`). `%` before a name that isn't a built-in command is a parse error, `nu::parser::error`. `[commands.shadow.builtin]`
+
+## Parameters
+
+**Defined.** Parameters in `[ ]` can be separated by spaces, commas or line breaks. `[commands.params.separators]`
+
+**Defined.** A parameter written as just a name, or `name: type`, is a required positional parameter. A missing argument is a parse error, `nu::parser::missing_positional`, and an extra one is a parse error, `nu::parser::extra_positional`. `[commands.params.required]`
+
+**Defined.** `name?` makes a positional parameter optional. When it isn't given, its value is `null`. `[commands.params.optional]`
+
+**Defined.** `name = value` gives a positional parameter a default value and makes it optional. A default may be combined with a type and with `?`. `[commands.params.default]`
+
+**Defined.** A default value must be a constant: a literal or a `const` variable. Anything else is a parse error, `nu::parser::non_constant_default_value`. A default that doesn't match the parameter's type is a parse error, `nu::parser::parse_mismatch`. `[commands.params.default-constant]`
+
+**Defined.** `name: type` declares a parameter's type, with or without a space after `:`. An argument of the wrong type is a parse error, `nu::parser::parse_mismatch`. Without a type, a parameter accepts any value. Besides the value types, `number`, `oneof<...>` and `external_arg` can be used; `external_arg` keeps a bare word exactly as written, so `0001` stays a string. An unknown type name is a parse error, `nu::parser::unknown_type`. `[commands.params.types]`
+
+**Defined.** Required positional parameters must come before optional ones, otherwise it is a parse error, `nu::parser::required_after_optional`. A command can have only one rest parameter, otherwise it is a parse error, `nu::parser::multiple_rest_params`. `[commands.params.order]`
+
+**Defined.** A positional parameter written after the rest parameter receives the first argument, and the rest parameter receives the others. `[commands.params.after-rest]`
+
+**Open question:** a parameter after `...rest` is accepted, but it takes the first argument rather than the last.
+
+**Defined.** Two parameters with the same name, or two flags with the same short name, are accepted. The later parameter gets the value, and the short flag sets only the first flag that declared it. `[commands.params.duplicates]`
+
+**Open question:** duplicate parameter names and short flags are mistakes that could be reported when the command is defined.
+
+**Defined.** A signature can combine required, optional and defaulted positional parameters, switches and flags with values and defaults. `[commands.params.kinds]`
+
+## Flags
+
+**Defined.** `--name: type` declares a flag that takes a value, written as `--name value` or `--name=value`, before or after the positional arguments. When the flag isn't given, its value is `null`, or its default when it has one. A flag without its value is a parse error, `nu::parser::missing_flag_param`, and a value of the wrong type is a parse error, `nu::parser::parse_mismatch`. `[commands.flags.value]`
+
+**Defined.** `--name (-n)` gives a flag a one-letter short form, used as `-n`. The variable is always named after the long form. `-n` alone declares a flag with only a short form. Several short switches can be combined, as in `-ab`. A short form with more than one letter is a parse error, `nu::parser::parse_mismatch`. `[commands.flags.short]`
+
+**Defined.** A flag without a type is a switch: its value is `true` when given and `false` otherwise. `--name=true` and `--name=false` set it explicitly. With a space, `--name true` passes `true` as a positional argument. A switch can't have a type annotation, which is a parse error, `nu::parser::error`. `[commands.flags.switch]`
+
+**Defined.** In a flag's variable name, `-` is replaced by `_`, so `--all-caps` is `$all_caps`. A flag the command doesn't declare is a parse error, `nu::parser::unknown_flag`. `[commands.flags.names]`
+
+**Defined.** If a flag whose type doesn't accept `nothing` is given `null`, it is treated as not given, so its default applies. If its type accepts `nothing`, such as `any`, the `null` is passed. `[commands.flags.null]`
+
+**Defined.** A record spread into a call (`...$record`) passes its keys as flags. A key that isn't a flag of the command is a runtime error, `nu::shell::error`. `[commands.flags.spread]`
+
+**Defined.** Every custom command has a `--help` (`-h`) flag that shows its help. Declaring a `--help` flag yourself is accepted, but `--help` still shows the help. `[commands.flags.help]`
+
+## Rest parameters
+
+**Defined.** `...name` (optionally `...name: type`) collects any remaining positional arguments into a list, which is empty when there are none. It can follow positional parameters, and a list can be spread into it. Each argument is type-checked, so a wrong type is a parse error, `nu::parser::parse_mismatch`. `[commands.rest.collect]`
+
+**Defined.** A standalone `--` ends flag parsing. Every later argument is positional, even if it starts with `-`, and the `--` itself isn't passed. This applies to built-in commands too. `[commands.rest.end-of-flags]`
+
+## Closures
+
+**Defined.** A command can take a closure as a parameter and run it with `do`. `[commands.closure.parameter]`
+
+**Defined.** A closure's parameter types are checked when the closure runs, so a wrong argument is a runtime error, here `nu::shell::cant_convert`. A closure stored in a variable can only be used after the `let`, which is a parse error otherwise, `nu::parser::variable_not_found`. `[commands.closure.checking]`

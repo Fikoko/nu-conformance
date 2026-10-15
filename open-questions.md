@@ -388,3 +388,28 @@ match 1.0 { 1 => 'int one', _ => 'other' }    # => int one
 ```
 
 The lang guide says values are compared "by type as well as value". Integers and floats match each other by value, as with `==`. Should the guide mention this exception?
+
+## Custom commands
+
+### C1. A parameter after `...rest` takes the first argument
+
+Rule: [`commands.params.after-rest`](rules/commands.md)
+
+```nu
+def f [...r, a] { {r: $r, a: $a} }
+f 1 2 3    # => {r: [2, 3], a: 1}
+```
+
+The signature reads as if `a` were the last argument, but it receives the first. Should a parameter after the rest parameter be a parse error?
+
+### C2. Duplicate parameters and short flags are accepted
+
+Rule: [`commands.params.duplicates`](rules/commands.md)
+
+```nu
+def f [a, a] { $a }; f 1 2                            # => 2
+def f [--x (-x), --y (-x)] { [$x $y] }; f -x          # => [true, false]
+def f [--help] { 'mine' }; f --help                   # => shows the built-in help
+```
+
+These look like mistakes in the signature, but none is reported. Should they be parse errors?

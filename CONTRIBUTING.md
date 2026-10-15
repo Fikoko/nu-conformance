@@ -69,6 +69,7 @@ Things to get right:
 - **Some errors happen earlier than you'd expect.** Nushell checks types while parsing, so many type errors are parse errors (`nu::parser::...`), not runtime errors. Run the script and look at the code before choosing `expect`.
 - **No network, no absolute paths, no reliance on your config.** Each test runs with `--no-config-file` in a fresh temporary directory.
 - **Commands that don't exist.** To test what happens when a command isn't found, use a name that starts with `nu-conformance-`, so it can't clash with a real program. Don't rely on case to make a name unique: macOS and Windows find commands regardless of case, so `True` runs the system's `true` program there.
+- **The header documents the first `def`.** Comments directly above a `def` become its documentation, and the test header is a comment block. If the first line of a test is a `def`, its help text starts with the header. Put another line first, or don't test the exact help text.
 - **Credit the source.** A test taken from an example in the lang guide or the Book ends its ID with `-guide` or `-book`, so it's clear which documented examples are covered.
 
 See [design-decisions.md](design-decisions.md) for why the format works this way.
