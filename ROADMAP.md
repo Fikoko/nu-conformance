@@ -44,7 +44,7 @@ Same process as the pilot, chapter by chapter, in roughly this order:
    - [x] `let`, `mut`, `const`, `unlet`, names, blocks, closures, custom commands, environment
 4. Flow control
    - [x] `if`/`else`, `for`, `while`, `loop`, `break`, `continue`
-   - [ ] `match`, `try`/`catch`/`finally`, `return`
+   - [x] `match`, `try`/`catch`/`finally`, `return`
 5. Custom commands
 6. Pipelines and `$in`
 

@@ -366,3 +366,25 @@ while 1 { }    # => Error: nu::shell::type_mismatch
 ```
 
 The same mistake gives two different error codes. Should they be the same?
+
+### F4. A float inside an integer range doesn't match a range pattern
+
+Rule: [`flow.match.range-values`](rules/flow.md)
+
+```nu
+match 1.5 { 1..2 => 'in', _ => 'out' }   # => out
+1.5 in 1..2                              # => false
+```
+
+The lang guide says a range pattern matches "a number inside the range". Should `1.5` match `1..2`, or should the guide say the pattern matches only the values the range produces?
+
+### F5. `match` compares by type, except for integers and floats
+
+Rule: [`flow.match.literals`](rules/flow.md)
+
+```nu
+match "3" { 3 => 'int', "3" => 'string' }    # => string
+match 1.0 { 1 => 'int one', _ => 'other' }    # => int one
+```
+
+The lang guide says values are compared "by type as well as value". Integers and floats match each other by value, as with `==`. Should the guide mention this exception?
