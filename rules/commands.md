@@ -1,6 +1,6 @@
 # Custom Commands
 
-Draft rules for the [Custom Commands](https://www.nushell.sh/lang-guide/chapters/custom_commands.html) chapter of the lang guide, and the Book's [Custom Commands](https://www.nushell.sh/book/custom_commands.html) page it points to. This part covers defining and calling commands, names, shadowing, parameters, flags, rest parameters and closures. Input and output types, `def --wrapped`, documentation and attributes are in part 2.
+Draft rules for the [Custom Commands](https://www.nushell.sh/lang-guide/chapters/custom_commands.html) chapter of the lang guide, and the Book's [Custom Commands](https://www.nushell.sh/book/custom_commands.html) page it points to. It covers defining and calling commands, names, shadowing, parameters, flags, rest parameters, closures, input and output types, `def --wrapped`, documentation, attributes and `def --env`. The lang guide's [Type Signatures](https://www.nushell.sh/lang-guide/chapters/types/type_signatures.html) page is covered here too.
 
 **Checked against:** Nushell 0.116.1.
 
@@ -85,3 +85,41 @@ Paragraphs marked **Open question** describe current behavior that may not be in
 **Defined.** A command can take a closure as a parameter and run it with `do`. `[commands.closure.parameter]`
 
 **Defined.** A closure's parameter types are checked when the closure runs, so a wrong argument is a runtime error, here `nu::shell::cant_convert`. A closure stored in a variable can only be used after the `let`, which is a parse error otherwise, `nu::parser::variable_not_found`. `[commands.closure.checking]`
+
+## Input and output types
+
+**Defined.** `def name [params]: input -> output { ... }` declares the types of the command's pipeline input and output. Several pairs can be given in brackets, separated by commas or line breaks: `[list -> string, string -> string]`. There may be a space before the `:`, but `->` needs spaces around it; `int->int` is a parse error, `nu::parser::unknown_type`. Without a declaration, input and output are `any`. `[commands.sig.declare]`
+
+**Defined.** Input that matches none of the declared input types is a parse error, `nu::parser::input_type_mismatch`, when its type is known while parsing. When it is only known at runtime, it is a runtime error, `nu::shell::only_supports_this_input_type`. `[commands.sig.input]`
+
+**Defined.** The body must produce the declared output type for each input type, which is checked while parsing. A mismatch is a parse error, `nu::parser::output_type_mismatch`. That includes a body ending in `print`, which outputs `nothing`, and an empty body, which outputs its input. `[commands.sig.output]`
+
+**Defined.** A typed flag that isn't given is `null`, and a switch that isn't given is `false`. Closure parameters can have types too. `[commands.sig.flags]`
+
+## `def --wrapped`
+
+**Defined.** A command defined with `def --wrapped` must have a rest parameter, otherwise it is a parse error, `nu::parser::missing_positional`. Flags and arguments it doesn't declare, including `--`, are collected into the rest parameter as strings, in order, so they can be passed on with `...$rest`. Flags it does declare are parsed as usual. `[commands.wrapped.rest]`
+
+## Documentation
+
+**Defined.** Comment lines directly above a `def` document the command. The first line is its `description`, and lines after a blank comment line are its `extra_description`. A blank line between the comments and the `def` stops them from being documentation. The documentation appears in `help` and `scope commands`. `[commands.doc.comments]`
+
+**Defined.** A comment after a parameter, separated by a space, is that parameter's description. `[commands.doc.parameters]`
+
+## Attributes
+
+**Defined.** `@example "description" { code } --result value` above a `def` adds an example to the command's help and to `scope commands`. `[commands.attr.example]`
+
+**Defined.** `@category "name"` sets the command's category. `[commands.attr.category]`
+
+**Defined.** `@deprecated` marks a command as deprecated. Calling it still runs it, and also reports a warning, `nu::parser::deprecated`, including the message given to `@deprecated`. `[commands.attr.deprecated]`
+
+**Defined.** By default, the deprecation warning is reported once, for the first call. In a script, `--report every` also reports only one warning for several calls. `[commands.attr.deprecated-report]`
+
+**Open question:** the Book and `attr deprecated`'s own help say `--report every` warns on every call, but in a script it warns once.
+
+**Defined.** An attribute name that isn't a known attribute is a parse error, `nu::parser::unknown_command`. `[commands.attr.unknown]`
+
+## `def --env`
+
+**Defined.** Changes a command makes to `$env`, including `cd`, are discarded when it returns, unless the command is defined with `def --env`. `[commands.env.def-env]`

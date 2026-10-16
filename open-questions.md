@@ -413,3 +413,15 @@ def f [--help] { 'mine' }; f --help                   # => shows the built-in he
 ```
 
 These look like mistakes in the signature, but none is reported. Should they be parse errors?
+
+### C3. `@deprecated --report every` warns only once in a script
+
+Rule: [`commands.attr.deprecated-report`](rules/commands.md)
+
+```nu
+@deprecated --report every
+def g [] { 1 }
+g; g; g    # => one nu::parser::deprecated warning
+```
+
+The Book and `help "attr deprecated"` say `--report every` warns on every call. In a script there is one warning, the same as the default. Does `every` only apply across separate REPL entries?
