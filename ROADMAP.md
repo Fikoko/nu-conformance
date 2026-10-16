@@ -49,6 +49,7 @@ Same process as the pilot, chapter by chapter, in roughly this order:
    - [x] Defining and calling, names, shadowing, parameters, flags, rest, closures
    - [x] Input/output types, `def --wrapped`, documentation, attributes, `def --env`
 6. Pipelines and `$in`
+   - [x] `$in`, statements, external commands, redirection
 
 ## Phase 3: Connecting with Nushell
 

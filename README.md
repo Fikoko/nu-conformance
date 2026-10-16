@@ -21,7 +21,20 @@ Nushell follows the same idea, with the [Language Reference Guide](https://www.n
 
 ## Status
 
-Early. The test format, runner, coverage check and CI are in place ([Phase 0](ROADMAP.md#phase-0-foundations)). The Strings chapter is drafted (44 rules, 127 tests), the Types chapter is drafted too, from integers to tables (90 rules, 303 tests), the Operators chapter is drafted (45 rules, 158 tests), and so are Declarations (18 rules, 64 tests) and Variable Scope (13 rules, 48 tests). Flow control is drafted too (42 rules, 160 tests), and so is Custom commands (43 rules, 137 tests). Pipelines and `$in` are next. See [ROADMAP.md](ROADMAP.md). Behavior that may not be intended is listed in [open-questions.md](open-questions.md).
+The core language chapters are drafted ([Phase 2](ROADMAP.md#phase-2-core-language) is complete): 314 rules and 1,040 tests, all passing on Linux, macOS and Windows.
+
+| Chapter | Rules | Tests |
+|---|---:|---:|
+| [Strings](rules/strings.md) | 44 | 127 |
+| [Types](rules/types.md) | 90 | 303 |
+| [Operators](rules/operators.md) | 45 | 158 |
+| [Declarations](rules/declarations.md) | 18 | 64 |
+| [Variable Scope](rules/scope.md) | 13 | 48 |
+| [Flow Control](rules/flow.md) | 42 | 160 |
+| [Custom Commands](rules/commands.md) | 43 | 137 |
+| [Pipelines](rules/pipelines.md) | 19 | 43 |
+
+Behavior that may not be intended is listed in [open-questions.md](open-questions.md). See [ROADMAP.md](ROADMAP.md) for what's next.
 
 Tests target the **current Nushell release**, recorded in [`NU_VERSION`](NU_VERSION).
 
