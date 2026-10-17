@@ -6,13 +6,17 @@ If the maintainers decide to change one, the affected tests get the new expected
 
 Questions marked **Resolved** have been decided by the maintainers. Their tests hold the new expected result with `status: pending` until the release that includes the change is the pinned version. The question text below the marker still describes the old behavior.
 
-Still open: S1, S4, S5, T5, T9, T14, O2, D3 (reading `mut` in `where`), D4, F1, F4 (range patterns), F5.
+Questions marked **Answered** describe intended behavior, as confirmed by the maintainers in [#1](https://github.com/Fikoko/nu-conformance/issues/1). Their tests stay as they are. Answers that call for documentation changes are collected under [Documentation fixes](#documentation-fixes).
+
+Every question has been resolved or answered. New questions are added as they come up.
 
 All behavior below was checked against Nushell 0.116.1.
 
 ## Strings
 
 ### S1. Adjacent quotes keep the quote characters
+
+**Answered** by the maintainers in [#1](https://github.com/Fikoko/nu-conformance/issues/1): intended. A quoted word runs to its last quote of the same kind, and the inner quotes are kept.
 
 Rule: [`strings.adjacent.same-quote`](rules/strings.md)
 
@@ -57,6 +61,8 @@ Should an unclosed raw string also be `unclosed_delimiter`?
 
 ### S4. Binary values in interpolation become a list of numbers
 
+**Answered** by the maintainers in [#1](https://github.com/Fikoko/nu-conformance/issues/1): intended. Interpolation shows a value's display form, and `into string` is a strict conversion.
+
 Rule: [`strings.interp.structured`](rules/strings.md)
 
 ```nu
@@ -67,6 +73,8 @@ $"(0x[01 ff])"          # => "[1, 255]"
 Interpolation turns a binary value into the text of a list of byte values. `into string` refuses to convert binary at all. More generally, interpolation and `into string` disagree for lists, records and binary values. Which conversions are intended to be stable?
 
 ### S5. A backtick string after `let =` runs a command
+
+**Answered** by the maintainers in [#1](https://github.com/Fikoko/nu-conformance/issues/1): intended. A backtick string in command position is a command, as the Book says.
 
 Rule: [`strings.backtick.command-position`](rules/strings.md)
 
@@ -140,6 +148,8 @@ A literal one past the largest integer silently becomes a float and loses precis
 
 ### T5. Underscores are accepted almost anywhere in numbers
 
+**Answered** by the maintainers in [#1](https://github.com/Fikoko/nu-conformance/issues/1): intended ([nushell/nushell#7759](https://github.com/nushell/nushell/issues/7759)). `_1` being an integer may be worth tightening.
+
 Rule: [`types.int.underscores`](rules/types.md)
 
 ```nu
@@ -191,6 +201,8 @@ Rule: [`types.datetime.invalid`](rules/types.md)
 A typo in a date literal gives a string instead of an error. Should something that looks like a date but isn't valid be a parse error?
 
 ### T9. Duration units are case-sensitive, filesize units are not
+
+**Answered** by the maintainers in [#1](https://github.com/Fikoko/nu-conformance/issues/1): intended. Filesize units ignore case on purpose, and duration units never did.
 
 Rules: [`types.duration.units`](rules/types.md), [`types.filesize.case-insensitive`](rules/types.md)
 
@@ -257,6 +269,8 @@ The duplicate is visible in the source, but the error only comes when the record
 
 ### T14. A table literal can't have zero rows
 
+**Answered** by the maintainers in [#1](https://github.com/Fikoko/nu-conformance/issues/1): intended. An empty table is `[]`, since lists carry no schema at runtime.
+
 Rule: [`types.table.literal`](rules/types.md)
 
 ```nu
@@ -282,6 +296,8 @@ let x = 1; not $x == 2   # => same error
 The lang guide, the Book and `help operators` all list `not` (precedence 55) below the comparison operators (80), so `not "a" == "b"` should mean `not ("a" == "b")`. The parser applies `not` to the next value only. Should the parser change, or the documentation?
 
 ### O2. Ordering against `null` gives `null`
+
+**Answered** by the maintainers in [#1](https://github.com/Fikoko/nu-conformance/issues/1): intended ([nushell/nushell#8617](https://github.com/nushell/nushell/issues/8617)). An ordering comparison with `null` gives `null`.
 
 Rule: [`operators.compare.null`](rules/operators.md)
 
@@ -349,6 +365,8 @@ The lang guide says `$in` is a built-in variable that can't be deleted.
 
 ### D3. `where` can use `mut` variables, unlike other closures
 
+**Answered** by the maintainers in [#1](https://github.com/Fikoko/nu-conformance/issues/1): reading a `mut` variable in `where` is intended. The lang guide should say so.
+
 **Partly resolved in 0.117.0** by [#19271](https://github.com/nushell/nushell/pull/19271): assigning to a `mut` variable inside a `where` condition is a parse error, since the assignment never took effect. Reading one, as below, still works, so the question stays open.
 
 Rule: [`scope.closure.where`](rules/scope.md)
@@ -363,6 +381,8 @@ The lang guide lists `where` among the commands whose closures can't capture `mu
 
 ### D4. List item types in annotations are checked only at runtime
 
+**Answered** by the maintainers in [#1](https://github.com/Fikoko/nu-conformance/issues/1): intended. Element types in annotations are checked at runtime, as part of gradual typing.
+
 Rule: [`declarations.let.annotation-items`](rules/declarations.md)
 
 ```nu
@@ -375,6 +395,8 @@ The item types of the literal are known while parsing. Should this be a parse er
 ## Flow control
 
 ### F1. `for` over a record runs once with the whole record
+
+**Answered** by the maintainers in [#1](https://github.com/Fikoko/nu-conformance/issues/1): intended. `for` iterates like `each`, and a record is one value. The docs should say so.
 
 Rule: [`flow.for.single-value`](rules/flow.md)
 
@@ -415,6 +437,8 @@ The same mistake gives two different error codes. Should they be the same?
 
 ### F4. A float inside an integer range doesn't match a range pattern
 
+**Answered** by the maintainers in [#1](https://github.com/Fikoko/nu-conformance/issues/1): range membership means "a value the range produces", so `1.5` doesn't match `1..2`. The lang guide's wording should change.
+
 **Related fix in 0.117.0** in [#19271](https://github.com/nushell/nushell/pull/19271): a float range includes its end value correctly, so `2.0 in 1.0..2.0` is `true`. The range pattern below still doesn't match `1.5`, so the question stays open.
 
 Rule: [`flow.match.range-values`](rules/flow.md)
@@ -427,6 +451,8 @@ match 1.5 { 1..2 => 'in', _ => 'out' }   # => out
 The lang guide says a range pattern matches "a number inside the range". Should `1.5` match `1..2`, or should the guide say the pattern matches only the values the range produces?
 
 ### F5. `match` compares by type, except for integers and floats
+
+**Answered** by the maintainers in [#1](https://github.com/Fikoko/nu-conformance/issues/1): intended. `match` compares with `==`, so `1` and `1.0` match. The lang guide should mention it.
 
 Rule: [`flow.match.literals`](rules/flow.md)
 
@@ -479,3 +505,17 @@ g; g; g    # => one nu::parser::deprecated warning
 ```
 
 The Book and `help "attr deprecated"` say `--report every` warns on every call. In a script there is one warning, the same as the default. Does `every` only apply across separate REPL entries?
+
+## Documentation fixes
+
+Places where `nu` is right and the documentation is wrong, incomplete or unclear. Each could be a small pull request to [nushell.github.io](https://github.com/nushell/nushell.github.io).
+
+- **Lang guide, Variables:** `where` is listed among the commands whose closures can't capture `mut` variables, but reading one is allowed (D3).
+- **Lang guide, `match`:** a range pattern matches a value the range produces, not any number inside the range (F4). Values are compared with `==`, so `1` and `1.0` match (F5).
+- **Lang guide and Book, `for`:** say that a record, and any value that isn't a list, range or table, is iterated as a single item (F1).
+- **Book:** the example `[Infinity -Infinity]` gives strings from 0.117.0 on. Use `inf` and `-inf`.
+- **Book:** the list of string escapes is missing `\ ` (an escaped space).
+- **Book:** the table on escaping `)` in string interpolation doesn't match current behavior.
+- **Book:** the octal example `0o[1234567]` is not a valid binary literal.
+- **Lang guide, Strings:** the backtick string section is still in note form.
+- **Lang guide, Pipelines:** the "Best practices" heading has no content.

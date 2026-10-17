@@ -6,7 +6,7 @@ Draft rules for the [Declarations](https://www.nushell.sh/lang-guide/chapters/de
 
 Assignment operators are covered in the [Operators](operators.md#assignment) chapter, and where declarations are visible in [Variable Scope](scope.md).
 
-Paragraphs marked **Open question** describe current behavior that may not be intended. The rules record what `nu` does today, and the questions are listed in [`open-questions.md`](../open-questions.md).
+Paragraphs marked **Open question** describe current behavior that may not be intended, **Confirmed** paragraphs record behavior the maintainers have confirmed as intended, and **Changes in 0.117.0** notes describe decided changes that aren't released yet. The rules record what `nu` does today, and the questions are listed in [`open-questions.md`](../open-questions.md).
 
 **Defined.** `let`, `mut` and `const` declare variables. `let` and `mut` values are computed when the code runs, `const` values while it is parsed. Only `mut` variables can be reassigned. `unlet` removes a variable. `[declarations.intro]`
 
@@ -18,7 +18,7 @@ Paragraphs marked **Open question** describe current behavior that may not be in
 
 **Defined.** The item types of a list annotation such as `list<int>` are checked when the code runs, even when the value is a list literal. A mismatch is a runtime error, `nu::shell::type_mismatch`. `[declarations.let.annotation-items]`
 
-**Open question:** `let x: int = "ten"` is a parse error, but `let x: list<int> = [1 "a"]` is only caught at runtime, although the literal's item types are known while parsing.
+**Confirmed** ([#1](https://github.com/Fikoko/nu-conformance/issues/1)): intended: element types in an annotation are checked at runtime, as part of gradual typing.
 
 **Defined.** `let name` without `=` takes its value from the pipeline input and passes the same value on as its output, so it can be in the middle or at the end of a pipeline. With no input, the value is `null`. `[declarations.let.from-pipeline]`
 

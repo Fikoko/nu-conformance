@@ -6,7 +6,7 @@ Draft rules for the [Types](https://www.nushell.sh/lang-guide/chapters/types/00_
 
 Some examples on these pages use operators (`/`, `//`, `mod`, `==`). They are tested here because the type pages document them. The full rules for operators belong to the Operators chapter.
 
-Paragraphs marked **Open question** describe current behavior that may not be intended. The rules record what `nu` does today, and the questions are listed in [`open-questions.md`](../open-questions.md).
+Paragraphs marked **Open question** describe current behavior that may not be intended, **Confirmed** paragraphs record behavior the maintainers have confirmed as intended, and **Changes in 0.117.0** notes describe decided changes that aren't released yet. The rules record what `nu` does today, and the questions are listed in [`open-questions.md`](../open-questions.md).
 
 **Defined.** Every value has a type. This chapter covers the types `int`, `float`, `bool`, `nothing`, `duration`, `filesize`, `datetime`, `range`, `binary`, `list`, `record` and `table`. `describe` reports a value's type by these names. `[types.intro]`
 
@@ -26,7 +26,7 @@ Paragraphs marked **Open question** describe current behavior that may not be in
 
 **Defined.** An underscore may appear anywhere in an integer literal, including next to the prefix, more than once in a row, and at the start or end. It is ignored, so `1_000_000` is `1000000` and `0x_ff` is `255`. `[types.int.underscores]`
 
-**Open question:** underscores are accepted in more places than digit separators usually are. `1_`, `1__0` and `_1` are all integers.
+**Confirmed** ([#1](https://github.com/Fikoko/nu-conformance/issues/1)): intended ([nushell/nushell#7759](https://github.com/nushell/nushell/issues/7759)). `_1` being an integer may be tightened later.
 
 **Defined.** An integer is a signed 64-bit value. The largest is `9223372036854775807` and the smallest is `-9223372036854775808`. `[types.int.range]`
 
@@ -138,7 +138,7 @@ Paragraphs marked **Open question** describe current behavior that may not be in
 
 **Defined.** Filesize units are case-insensitive, so `1KiB`, `1kib` and `1KIB` are equal, and `1b` is one byte. `[types.filesize.case-insensitive]`
 
-**Open question:** filesize units ignore case, but duration units don't (`1Sec` is not a duration).
+**Confirmed** ([#1](https://github.com/Fikoko/nu-conformance/issues/1)): intended: filesize units ignore case, and duration units don't.
 
 **Defined.** Inside a list, a number followed by letters ending in `b` or `B` that aren't a known unit, such as `1ZB`, is a parse error, `nu::parser::error`. `[types.filesize.unknown-unit]`
 

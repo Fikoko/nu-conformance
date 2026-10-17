@@ -6,7 +6,7 @@ Draft rules for strings, following the [Strings and Text Formatting](https://www
 
 Commands that work on strings (`str ...`, `split ...` and so on) are out of scope ([D1](../design-decisions.md#d1-scope-language-first-commands-later)). Operators on strings belong to the Operators chapter.
 
-Paragraphs marked **Open question** describe current behavior that may not be intended. The rules record what `nu` does today, and the questions are listed in [`open-questions.md`](../open-questions.md).
+Paragraphs marked **Open question** describe current behavior that may not be intended, **Confirmed** paragraphs record behavior the maintainers have confirmed as intended, and **Changes in 0.117.0** notes describe decided changes that aren't released yet. The rules record what `nu` does today, and the questions are listed in [`open-questions.md`](../open-questions.md).
 
 **Defined.** A string is a sequence of Unicode characters. Nushell has six forms of string literal: single-quoted, double-quoted, raw, backtick-quoted, bare words and interpolated strings. They differ in how they are delimited, whether they process escape sequences, and whether they evaluate expressions. `[strings.intro]`
 
@@ -82,7 +82,7 @@ Paragraphs marked **Open question** describe current behavior that may not be in
 
 **Defined.** Two strings with the same kind of quote written next to each other with no space between them, such as `'a''b'` or `"a""b"`, form a single string that keeps the quote characters: `a''b` and `a""b`. `[strings.adjacent.same-quote]`
 
-**Open question:** this is surprising, since `'a''b'` doesn't contain `'` in the way it appears to, and it is inconsistent with the next rule.
+**Confirmed** ([#1](https://github.com/Fikoko/nu-conformance/issues/1)): intended: a quoted word runs to its last quote of the same kind, and the inner quotes are kept.
 
 **Defined.** A quoted string followed directly by a bare word or a string with a different kind of quote, such as `'a'b` or `'a'"b"`, is a parse error, `nu::parser::extra_token_after_closing_delimiter`. `[strings.adjacent.other]`
 
@@ -112,7 +112,7 @@ Paragraphs marked **Open question** describe current behavior that may not be in
 
 **Implementation-defined.** Lists, records, ranges and binary values are converted to a text form, such as `[1, 2, 3]` for a list and `{a: 1}` for a record. `into string` behaves differently for these values: it converts each list item separately and rejects records and binary values. `[strings.interp.structured]`
 
-**Open question:** a binary value is converted to a list of its byte values, so `0x[01 ff]` becomes `[1, 255]`.
+**Confirmed** ([#1](https://github.com/Fikoko/nu-conformance/issues/1)): intended: interpolation shows a value's display form.
 
 **Defined.** An interpolated string can be the value of a `const` and is then evaluated when the code is parsed. `[strings.interp.const]`
 

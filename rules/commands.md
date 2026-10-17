@@ -6,7 +6,7 @@ Draft rules for the [Custom Commands](https://www.nushell.sh/lang-guide/chapters
 
 Where a command's body can see variables, and how `def --env` works, is covered in [Variable Scope](scope.md#custom-commands). `return` is covered in [Flow Control](flow.md#return), and spreading arguments in [Operators](operators.md#spread).
 
-Paragraphs marked **Open question** describe current behavior that may not be intended. The rules record what `nu` does today, and the questions are listed in [`open-questions.md`](../open-questions.md).
+Paragraphs marked **Open question** describe current behavior that may not be intended, **Confirmed** paragraphs record behavior the maintainers have confirmed as intended, and **Changes in 0.117.0** notes describe decided changes that aren't released yet. The rules record what `nu` does today, and the questions are listed in [`open-questions.md`](../open-questions.md).
 
 **Defined.** `def name [parameters] { body }` defines a custom command, which is then called like a built-in command. Arguments and flags are parsed and type-checked while parsing. `[commands.intro]`
 

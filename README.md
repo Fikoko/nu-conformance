@@ -34,7 +34,7 @@ The core language chapters are drafted ([Phase 2](ROADMAP.md#phase-2-core-langua
 | [Custom Commands](rules/commands.md) | 43 | 138 |
 | [Pipelines](rules/pipelines.md) | 19 | 43 |
 
-Behavior that may not be intended is listed in [open-questions.md](open-questions.md). 23 of the questions, and parts of two more, were fixed in [nushell/nushell#19271](https://github.com/nushell/nushell/pull/19271) for 0.117.0. The 62 tests for those changes are marked `pending` until 0.117.0 is released, and each affected rule has a "Changes in 0.117.0" note. See [ROADMAP.md](ROADMAP.md) for what's next.
+Behavior that may not be intended is listed in [open-questions.md](open-questions.md). All 35 questions have been answered: 23 were fixed in [nushell/nushell#19271](https://github.com/nushell/nushell/pull/19271) for 0.117.0, and the rest were confirmed as intended in [#1](https://github.com/Fikoko/nu-conformance/issues/1), some with documentation fixes still to make. The 62 tests for those changes are marked `pending` until 0.117.0 is released, and each affected rule has a "Changes in 0.117.0" note. See [ROADMAP.md](ROADMAP.md) for what's next.
 
 Tests target the **current Nushell release**, recorded in [`NU_VERSION`](NU_VERSION).
 

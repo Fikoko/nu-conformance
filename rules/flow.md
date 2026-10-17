@@ -6,7 +6,7 @@ Draft rules for the [Flow control](https://www.nushell.sh/lang-guide/chapters/fl
 
 How blocks and closures see variables is covered in [Variable Scope](scope.md).
 
-Paragraphs marked **Open question** describe current behavior that may not be intended. The rules record what `nu` does today, and the questions are listed in [`open-questions.md`](../open-questions.md).
+Paragraphs marked **Open question** describe current behavior that may not be intended, **Confirmed** paragraphs record behavior the maintainers have confirmed as intended, and **Changes in 0.117.0** notes describe decided changes that aren't released yet. The rules record what `nu` does today, and the questions are listed in [`open-questions.md`](../open-questions.md).
 
 **Defined.** `if`, `match` and `try` are expressions and produce a value. `for`, `while` and `loop` are statements: they produce `null`. The bodies of all four are blocks, not closures, so they can assign to `mut` variables from outside. `[flow.intro]`
 
@@ -28,7 +28,7 @@ Paragraphs marked **Open question** describe current behavior that may not be in
 
 **Defined.** If the value is not a list, range or table, the block runs once with the whole value. That includes records, numbers, strings and binary values. If the value is `null`, the block doesn't run. `[flow.for.single-value]`
 
-**Open question:** a record is iterated as a single item rather than by its key-value pairs.
+**Confirmed** ([#1](https://github.com/Fikoko/nu-conformance/issues/1)): intended: `for` iterates like `each`, and a record is one value.
 
 **Defined.** The loop variable may have a type annotation (`for i: int in ...`) and may be written with a leading `$`. It is immutable, and it and any variables declared in the body are not visible after the loop. `[flow.for.variable]`
 
@@ -80,7 +80,7 @@ Paragraphs marked **Open question** describe current behavior that may not be in
 
 **Defined.** A range pattern matches only the values the range produces. A float between two integer bounds doesn't match, so `match 1.5 { 1..2 => 'in' }` doesn't match. `[flow.match.range-values]`
 
-**Open question:** the lang guide says a range pattern matches "a number inside the range", which suggests `1.5` should match `1..2`.
+**Confirmed** ([#1](https://github.com/Fikoko/nu-conformance/issues/1)): intended: a range pattern matches a value the range produces. The lang guide's wording is to be fixed.
 
 **Defined.** A pattern in parentheses is evaluated while parsing and matches its value, so it can use constants and constant expressions. A `let` or `mut` variable in parentheses is a parse error, `nu::parser::error`. `[flow.match.constants]`
 

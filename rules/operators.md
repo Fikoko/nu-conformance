@@ -6,7 +6,7 @@ Draft rules for the [Operators](https://www.nushell.sh/lang-guide/chapters/opera
 
 Some rules about operators on specific types are in the [Types](types.md) chapter, for example integer overflow, division by zero and arithmetic on durations.
 
-Paragraphs marked **Open question** describe current behavior that may not be intended. The rules record what `nu` does today, and the questions are listed in [`open-questions.md`](../open-questions.md).
+Paragraphs marked **Open question** describe current behavior that may not be intended, **Confirmed** paragraphs record behavior the maintainers have confirmed as intended, and **Changes in 0.117.0** notes describe decided changes that aren't released yet. The rules record what `nu` does today, and the questions are listed in [`open-questions.md`](../open-questions.md).
 
 **Defined.** An operator combines the values on either side of it, or, for `not`, the value after it. Many type errors in operators are found while parsing, before the code runs. `[operators.intro]`
 
@@ -44,7 +44,7 @@ Paragraphs marked **Open question** describe current behavior that may not be in
 
 **Changes in 0.117.0** ([#19271](https://github.com/nushell/nushell/pull/19271)): using the `null` result as an `if` condition gives `nu::shell::type_mismatch`.
 
-**Open question:** ordering against `null` gives neither `true`, `false` nor an error. `$x < 5` with `$x` null only fails later, where the result is used.
+**Confirmed** ([#1](https://github.com/Fikoko/nu-conformance/issues/1)): intended ([nushell/nushell#8617](https://github.com/nushell/nushell/issues/8617)): an ordering comparison with `null` gives `null`.
 
 ## Bitwise
 

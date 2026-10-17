@@ -6,7 +6,7 @@ Draft rules for the [Variable Scope](https://www.nushell.sh/lang-guide/chapters/
 
 How variables are declared is covered in [Declarations](declarations.md).
 
-Paragraphs marked **Open question** describe current behavior that may not be intended. The rules record what `nu` does today, and the questions are listed in [`open-questions.md`](../open-questions.md).
+Paragraphs marked **Open question** describe current behavior that may not be intended, **Confirmed** paragraphs record behavior the maintainers have confirmed as intended, and **Changes in 0.117.0** notes describe decided changes that aren't released yet. The rules record what `nu` does today, and the questions are listed in [`open-questions.md`](../open-questions.md).
 
 **Defined.** Nushell is lexically scoped. Every block starts a new scope, and a variable is visible from its declaration to the end of the block that contains it, including nested blocks, closures and custom commands. The environment follows different rules. `[scope.intro]`
 
@@ -28,7 +28,7 @@ Paragraphs marked **Open question** describe current behavior that may not be in
 
 **Changes in 0.117.0** ([#19271](https://github.com/nushell/nushell/pull/19271)): assigning to a `mut` variable inside a `where` condition is a parse error, `nu::parser::expected_keyword`. Reading one is still allowed.
 
-**Open question:** the lang guide says the closures given to `where` can't capture `mut` variables, but `where` can read them in every form, including `{|v| $v > $x }`.
+**Confirmed** ([#1](https://github.com/Fikoko/nu-conformance/issues/1)): intended: `where` may read `mut` variables. The lang guide's wording is to be fixed.
 
 ## Custom commands
 
