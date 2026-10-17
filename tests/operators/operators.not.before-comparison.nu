@@ -1,5 +1,8 @@
 # id: operators.not.before-comparison
 # rule: operators.not.operand
-# expect: parse-error
-# error: nu::parser::operator_incompatible_types
+# expect: output
+# ---
+# false
+# ---
+# status: pending
 not 1 < 2

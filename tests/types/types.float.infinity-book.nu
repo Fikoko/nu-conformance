@@ -2,6 +2,7 @@
 # rule: types.float.special
 # expect: output
 # ---
-# [inf, -inf]
+# ["Infinity", "-Infinity"]
 # ---
+# status: pending
 [Infinity -Infinity] | to nuon

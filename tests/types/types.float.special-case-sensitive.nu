@@ -1,7 +1,8 @@
-# id: types.float.special-case-insensitive
+# id: types.float.special-case-sensitive
 # rule: types.float.special-case
 # expect: output
 # ---
-# [inf, inf, NaN, NaN]
+# ["INF", "infinity", NaN, "NAN"]
 # ---
+# status: pending
 [INF infinity nan NAN] | to nuon

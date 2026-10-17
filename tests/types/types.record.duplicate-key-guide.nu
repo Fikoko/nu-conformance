@@ -1,5 +1,6 @@
 # id: types.record.duplicate-key-guide
 # rule: types.record.duplicate-keys
-# expect: runtime-error
-# error: nu::shell::column_defined_twice
+# expect: parse-error
+# error: nu::parser::column_defined_twice
+# status: pending
 {a: 1, a: 2}

@@ -1,7 +1,8 @@
-# id: types.filesize.no-plus-sign
+# id: types.filesize.plus-sign
 # rule: types.filesize.literal
 # expect: output
 # ---
-# list<string>
+# list<filesize>
 # ---
+# status: pending
 [+1kB] | describe

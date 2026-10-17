@@ -26,7 +26,7 @@ Paragraphs marked **Open question** describe current behavior that may not be in
 
 **Defined.** `**` and `mod` on integers raise `nu::shell::operator_overflow` when the result doesn't fit in 64 bits. This includes the smallest integer `mod -1`. `[operators.arith.overflow]`
 
-**Open question:** `-9223372036854775808 mod -1` is mathematically `0`, which fits, but it is an overflow error.
+**Changes in 0.117.0** ([#19271](https://github.com/nushell/nushell/pull/19271)): `(-9223372036854775808) mod -1` is `0`.
 
 **Defined.** Arithmetic on types that don't support it, such as strings, lists, `null` and booleans, is a parse error, `nu::parser::operator_unsupported_type`. Arithmetic between two types that each support it but not together, such as a string and an integer, or a float and a duration, is a parse error, `nu::parser::operator_incompatible_types`. `[operators.arith.types]`
 
@@ -41,6 +41,8 @@ Paragraphs marked **Open question** describe current behavior that may not be in
 **Defined.** Ordering values of two types that can't be compared, such as an integer and a string, is a parse error, `nu::parser::operator_incompatible_types`. Comparisons don't chain: `1 < 2 < 3` compares `true` with `3`, which is the same error. `[operators.compare.incompatible]`
 
 **Defined.** If either side of `<`, `<=`, `>` or `>=` is `null`, the result is `null`, not a boolean. Using that result as a condition is a runtime error, `nu::shell::cant_convert`. `[operators.compare.null]`
+
+**Changes in 0.117.0** ([#19271](https://github.com/nushell/nushell/pull/19271)): using the `null` result as an `if` condition gives `nu::shell::type_mismatch`.
 
 **Open question:** ordering against `null` gives neither `true`, `false` nor an error. `$x < 5` with `$x` null only fails later, where the result is used.
 
@@ -64,7 +66,7 @@ Paragraphs marked **Open question** describe current behavior that may not be in
 
 **Defined.** `not` applies only to the single value directly after it. To negate a comparison or other expression, put it in parentheses: `not ("a" == "b")`. Without them, `not "a" == "b"` negates `"a"`, which is a runtime error, `nu::shell::cant_convert`. `[operators.not.operand]`
 
-**Open question:** the lang guide, the Book and `help operators` all give `not` a lower precedence than the comparison operators, which would make `not 1 == 2` mean `not (1 == 2)`. The parser instead applies `not` to `1` alone.
+**Changes in 0.117.0** ([#19271](https://github.com/nushell/nushell/pull/19271)): `not` has the precedence `help operators` lists, so `not $a == $b` means `not ($a == $b)`.
 
 ## Precedence
 
@@ -96,9 +98,11 @@ Paragraphs marked **Open question** describe current behavior that may not be in
 
 **Defined.** With a range on the right, `in` is `true` if the value is one of the values the range produces, so `1.5 in 1..5` is `false`. `[operators.member.range]`
 
+**Changes in 0.117.0** ([#19271](https://github.com/nushell/nushell/pull/19271)): a float range includes its end value correctly: `2.0 in 1.0..2.0` is `true` and `2.0 in 1.0..<2.0` is `false`.
+
 **Defined.** If the left value's type can't be an item of the right side, it is a parse error, `nu::parser::operator_incompatible_types`. This includes an integer in a list of floats, and a non-string with a string or record on the right. A right side that holds no items, such as `null` or an integer, is a parse error, `nu::parser::operator_unsupported_type`. `[operators.member.types]`
 
-**Open question:** `1 == 1.0` is `true`, but `1 in [1.0]` is a parse error.
+**Changes in 0.117.0** ([#19271](https://github.com/nushell/nushell/pull/19271)): `in` compares integers and floats by value, so `1 in [1.0]` and `1.0 in [1]` are `true`.
 
 ## Concatenation
 

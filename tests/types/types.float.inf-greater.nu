@@ -1,7 +1,8 @@
-# id: types.float.one-not-less-than-inf
+# id: types.float.inf-greater
 # rule: types.float.infinity-compare
 # expect: output
 # ---
-# false
+# true
 # ---
-1 < inf
+# status: pending
+inf > 1

@@ -50,11 +50,11 @@ Paragraphs marked **Open question** describe current behavior that may not be in
 
 **Defined.** A positional parameter written after the rest parameter receives the first argument, and the rest parameter receives the others. `[commands.params.after-rest]`
 
-**Open question:** a parameter after `...rest` is accepted, but it takes the first argument rather than the last.
+**Changes in 0.117.0** ([#19271](https://github.com/nushell/nushell/pull/19271)): a positional parameter after the rest parameter is a parse error, `nu::parser::positional_after_rest`.
 
 **Defined.** Two parameters with the same name, or two flags with the same short name, are accepted. The later parameter gets the value, and the short flag sets only the first flag that declared it. `[commands.params.duplicates]`
 
-**Open question:** duplicate parameter names and short flags are mistakes that could be reported when the command is defined.
+**Changes in 0.117.0** ([#19271](https://github.com/nushell/nushell/pull/19271)): two parameters or flags with the same name, or the same short name, are a parse error, `nu::parser::duplicate_parameter`.
 
 **Defined.** A signature can combine required, optional and defaulted positional parameters, switches and flags with values and defaults. `[commands.params.kinds]`
 
@@ -73,6 +73,8 @@ Paragraphs marked **Open question** describe current behavior that may not be in
 **Defined.** A record spread into a call (`...$record`) passes its keys as flags. A key that isn't a flag of the command is a runtime error, `nu::shell::error`. `[commands.flags.spread]`
 
 **Defined.** Every custom command has a `--help` (`-h`) flag that shows its help. Declaring a `--help` flag yourself is accepted, but `--help` still shows the help. `[commands.flags.help]`
+
+**Changes in 0.117.0** ([#19271](https://github.com/nushell/nushell/pull/19271)): declaring a `--help` flag is a parse error, `nu::parser::error`.
 
 ## Rest parameters
 
@@ -116,7 +118,7 @@ Paragraphs marked **Open question** describe current behavior that may not be in
 
 **Defined.** By default, the deprecation warning is reported once, for the first call. In a script, `--report every` also reports only one warning for several calls. `[commands.attr.deprecated-report]`
 
-**Open question:** the Book and `attr deprecated`'s own help say `--report every` warns on every call, but in a script it warns once.
+**Changes in 0.117.0** ([#19271](https://github.com/nushell/nushell/pull/19271)): every deprecation warning is reported, so `--report every` warns on each call.
 
 **Defined.** An attribute name that isn't a known attribute is a parse error, `nu::parser::unknown_command`. `[commands.attr.unknown]`
 

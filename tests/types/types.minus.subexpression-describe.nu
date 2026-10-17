@@ -2,6 +2,7 @@
 # rule: types.minus.literal-only
 # expect: output
 # ---
-# string
+# int
 # ---
+# status: pending
 -(5) | describe

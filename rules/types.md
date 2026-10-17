@@ -22,7 +22,7 @@ Paragraphs marked **Open question** describe current behavior that may not be in
 
 **Defined.** A sign is only allowed on decimal literals. `-0x10`, `-0b11`, `-0o7` and `+0b11` are strings, not numbers. `[types.int.radix-sign]`
 
-**Open question:** `-100` is an integer but `-0x10` is the string `"-0x10"`, which is easy to miss. Assigning it to an `int` variable is a type error, but using it elsewhere silently gives a string.
+**Changes in 0.117.0** ([#19271](https://github.com/nushell/nushell/pull/19271)): a sign is accepted before hex, octal and binary literals: `-0x10` is `-16` and `+0b11` is `3`.
 
 **Defined.** An underscore may appear anywhere in an integer literal, including next to the prefix, more than once in a row, and at the start or end. It is ignored, so `1_000_000` is `1000000` and `0x_ff` is `255`. `[types.int.underscores]`
 
@@ -32,7 +32,7 @@ Paragraphs marked **Open question** describe current behavior that may not be in
 
 **Defined.** A decimal integer literal outside that range is not an error. It becomes a `float`. Assigning it to a variable declared `int` is a parse error, `nu::parser::type_mismatch`. `[types.int.too-large]`
 
-**Open question:** an out-of-range literal silently changes type and loses precision. Arithmetic that goes out of range is an error instead ([`types.int.overflow`](#integer-arithmetic)).
+**Changes in 0.117.0** ([#19271](https://github.com/nushell/nushell/pull/19271)): an integer literal outside the 64-bit range is a parse error, `nu::parser::error`. Add `.0` to write a float.
 
 **Defined.** A hex literal may use all 64 bits. Its bits are read as a two's-complement value, so `0x8000000000000000` is the smallest integer and `0xffffffffffffffff` is `-1`. `[types.int.radix-range]`
 
@@ -48,7 +48,7 @@ Paragraphs marked **Open question** describe current behavior that may not be in
 
 **Defined.** A leading `-` makes a number negative only as part of a number literal. Before a parenthesized expression or a variable, it doesn't negate: `-(2 + 3)` is the string `"-5"` and `-$x` is the string `"-$x"`. Subtracting from zero (`0 - $x`) negates a value. `[types.minus.literal-only]`
 
-**Open question:** there is no unary minus for expressions, and the result is a string rather than an error, so a mistake can go unnoticed.
+**Changes in 0.117.0** ([#19271](https://github.com/nushell/nushell/pull/19271)): `-` before a variable or a parenthesized expression negates its value, so `-$x` and `-(2 + 3)` are numbers (or durations, filesizes).
 
 ## Floats
 
@@ -66,9 +66,11 @@ Paragraphs marked **Open question** describe current behavior that may not be in
 
 **Defined.** `Infinity` and `inf` are positive infinity, and `NaN` and `nan` are not-a-number. With a leading `-`, `-Infinity` and `-inf` are negative infinity. These are floats. `[types.float.special]`
 
+**Changes in 0.117.0** ([#19271](https://github.com/nushell/nushell/pull/19271)): `Infinity` is a string. Only `inf`, `nan` and `NaN` are special floats.
+
 **Defined.** The names `inf`, `infinity` and `nan` are matched ignoring case, so `INF` and `NAN` are also floats. `[types.float.special-case]`
 
-**Open question:** these names ignore case, but `true`, `false` and `null` don't (`True` and `NULL` are strings).
+**Changes in 0.117.0** ([#19271](https://github.com/nushell/nushell/pull/19271)): the special float names are case-sensitive: `inf`, `nan` and `NaN` are floats, and spellings such as `INF` and `NAN` are strings.
 
 **Defined.** A float literal too large to represent becomes infinity, so `1e309` is `inf`. A literal too small to represent becomes `0.0`. `[types.float.literal-range]`
 
@@ -80,7 +82,7 @@ Paragraphs marked **Open question** describe current behavior that may not be in
 
 **Defined.** Comparing infinity with another number gives these results today: `==` is `true` for any number, including `-inf`, and `<` and `>` are `false`. `[types.float.infinity-compare]`
 
-**Open question:** this looks like a bug. In IEEE 754, `inf > 1` is `true` and `inf == 1` is `false`. It also affects commands that compare values, for example `[1.0 inf] | math max` returns `1.0`, while `sort` orders infinity correctly.
+**Changes in 0.117.0** ([#19271](https://github.com/nushell/nushell/pull/19271)): `inf` compares as larger than every finite number, and `[1.0 inf] | math max` is `inf`.
 
 **Defined.** Dividing a float by zero is a runtime error, `nu::shell::division_by_zero`. It does not produce infinity or `NaN`. `[types.float.division-by-zero]`
 
@@ -112,11 +114,13 @@ Paragraphs marked **Open question** describe current behavior that may not be in
 
 **Defined.** A duration literal can't start with `+`. `+5sec` is not a duration. `[types.duration.sign]`
 
+**Changes in 0.117.0** ([#19271](https://github.com/nushell/nushell/pull/19271)): a `+` sign is accepted, so `+5sec` is a duration.
+
 **Defined.** A fractional duration that isn't a whole number of nanoseconds is truncated toward zero, so `1.5ns` is `1ns` and `0.5ns` is `0ns`. `[types.duration.precision]`
 
 **Defined.** A duration is a signed 64-bit count of nanoseconds. A literal far outside that range is a compile error, `nu::compile::invalid_literal`. `[types.duration.range]`
 
-**Open question:** a literal just past the limit doesn't fail. `9223372036854775808ns` silently becomes the largest duration, while `106752day` is an error.
+**Changes in 0.117.0** ([#19271](https://github.com/nushell/nushell/pull/19271)): a duration literal that doesn't fit is a parse error, `nu::parser::literal_too_large`, instead of saturating.
 
 **Defined.** Converted to a string, a duration is broken down into its units from largest to smallest, leaving out units that are zero, for example `3day 3hr 21min 36sec`. A negative duration has a single `-` at the start. A zero duration is `0sec`. `[types.duration.display]`
 
@@ -125,6 +129,8 @@ Paragraphs marked **Open question** describe current behavior that may not be in
 ## Filesizes
 
 **Defined.** A filesize literal is a number (integer or decimal, optionally with `-`, underscores or an exponent) followed immediately by a filesize unit. The value has type `filesize` and is stored as a whole number of bytes, truncating any fraction. A filesize literal can't start with `+`. `[types.filesize.literal]`
+
+**Changes in 0.117.0** ([#19271](https://github.com/nushell/nushell/pull/19271)): a `+` sign is accepted, so `+1kB` is a filesize.
 
 **Defined.** The decimal units are `B`, `kB`, `MB`, `GB`, `TB`, `PB` and `EB`, each 1000 times the one before. `[types.filesize.decimal-units]`
 
@@ -138,7 +144,7 @@ Paragraphs marked **Open question** describe current behavior that may not be in
 
 **Defined.** A filesize is a signed 64-bit count of bytes. A literal far outside that range is a compile error, `nu::compile::invalid_literal`. `[types.filesize.range]`
 
-**Open question:** as with durations, a literal just past the limit doesn't fail. `8EiB` (exactly 2^63 bytes) silently becomes the largest filesize, while `10EiB` is an error.
+**Changes in 0.117.0** ([#19271](https://github.com/nushell/nushell/pull/19271)): a filesize literal that doesn't fit is a parse error, `nu::parser::literal_too_large`, instead of saturating.
 
 **Implementation-defined.** How a filesize is converted to a string depends on configuration. With the default configuration it uses decimal units with one decimal place, so `1500B` becomes `1.5 kB` and `1GiB` becomes `1.0 GB`. `[types.filesize.display]`
 
@@ -150,7 +156,7 @@ Paragraphs marked **Open question** describe current behavior that may not be in
 
 **Defined.** A literal that looks like a date but isn't a valid one, such as `2022-02-30`, `2022-2-2`, a time without seconds, or an offset without `:`, is not a datetime. In a list it is a string. A date with a leading `-` is a string, and eight digits without dashes are an integer. A space between the date and the time is a parse error, `nu::parser::parse_mismatch`. `[types.datetime.invalid]`
 
-**Open question:** an invalid date silently becomes a string rather than an error, so a typo like `2023-02-29` may go unnoticed.
+**Changes in 0.117.0** ([#19271](https://github.com/nushell/nushell/pull/19271)): a word written like a date that isn't a valid date is a parse error, `nu::parser::error`. A word that only starts like a date, such as `2023-02-29.log`, is still a string.
 
 **Defined.** Adding a duration to a datetime gives a datetime, and subtracting two datetimes gives a duration. Datetimes compare by the moment in time they represent, so the same moment in different offsets is equal. Adding a plain number to a datetime is a parse error, `nu::parser::operator_incompatible_types`. `[types.datetime.arithmetic]`
 
@@ -198,7 +204,7 @@ Paragraphs marked **Open question** describe current behavior that may not be in
 
 **Defined.** An extra `]` directly after a list item becomes part of that item. `[1 2]]` is the list `[1, "2]"]`, not an error. `[types.list.extra-close]`
 
-**Open question:** a stray `]` silently changes the data instead of being reported.
+**Changes in 0.117.0** ([#19271](https://github.com/nushell/nushell/pull/19271)): an extra `]` is a parse error, `nu::parser::unbalanced_delimiter`.
 
 **Defined.** A list's type is `list<T>`, where `T` is the common type of its items: `int` for integers, `number` for a mix of integers and floats, `oneof<...>` for other mixes, and `any` for an empty list. `[types.list.type]`
 
@@ -216,7 +222,7 @@ Paragraphs marked **Open question** describe current behavior that may not be in
 
 **Defined.** A key is a bare word, a quoted string or an interpolated string, a variable, or a parenthesized expression. A bare key may contain `-` and `.`. A bare number used as a key becomes a string. `true`, `false` and `null` can't be bare keys, which is a parse error, `nu::parser::parse_mismatch_with_full_string_msg`. `[types.record.keys]`
 
-**Open question:** a number is accepted as a bare record key, but `true` and `null` aren't, and numbers aren't accepted as table column names ([`types.table.literal`](#tables)).
+**Changes in 0.117.0** ([#19271](https://github.com/nushell/nushell/pull/19271)): `true`, `false` and `null` can be record keys, as strings.
 
 **Defined.** A value is a single item, like a list item. An expression such as `1 + 1` must be in parentheses, otherwise it is a parse error, `nu::parser::error`. `[types.record.values]`
 
@@ -224,7 +230,7 @@ Paragraphs marked **Open question** describe current behavior that may not be in
 
 **Defined.** A key may appear only once. Writing the same key twice is an error, `nu::shell::column_defined_twice`. It is reported when the record is evaluated, not when the code is parsed, so code before it runs first. `merge` replaces the values of existing keys. `[types.record.duplicate-keys]`
 
-**Open question:** a duplicate key in a literal could be found while parsing, but today it is a runtime error.
+**Changes in 0.117.0** ([#19271](https://github.com/nushell/nushell/pull/19271)): a duplicate key in a record literal is a parse error, `nu::parser::column_defined_twice`, so nothing runs.
 
 **Defined.** Inside a record literal, `...` followed directly by a record inserts its pairs. A spread key that is also written directly, before or after it, is a duplicate key, `nu::shell::column_defined_twice`. `[types.record.spread]`
 
@@ -234,11 +240,13 @@ Paragraphs marked **Open question** describe current behavior that may not be in
 
 **Defined.** A table literal is written `[[headers]; [row] [row] ...]`: a list of column names, a `;`, then one list per row. Column names may be bare words, quoted strings or variables, but not numbers, which is a parse error, `nu::parser::error`. A row that isn't a list is a parse error, `nu::parser::error`. Without the `;`, it is a list of lists. A table literal must have at least one row, so `[[a b];]` is a parse error, `nu::parser::parse_mismatch`. `[types.table.literal]`
 
-**Open question:** there is no way to write an empty table with named columns as a literal.
+**Changes in 0.117.0** ([#19271](https://github.com/nushell/nushell/pull/19271)): numbers can be column names, as strings: `[[1 2]; [3 4]]` has columns `"1"` and `"2"`.
 
 **Defined.** Every row must have exactly as many values as there are columns. Fewer is a parse error, `nu::parser::missing_columns`, and more is a parse error, `nu::parser::extra_columns`. `[types.table.row-length]`
 
 **Defined.** A column name may appear only once. A duplicate is a runtime error, `nu::shell::column_defined_twice`. `[types.table.duplicate-header]`
+
+**Changes in 0.117.0** ([#19271](https://github.com/nushell/nushell/pull/19271)): a duplicate column in a table literal is a parse error, `nu::parser::column_defined_twice`.
 
 **Defined.** A list whose items are all records is a table, and a table literal is equal to the list of records it describes. Its type is `table<column: type, ...>`, or just `table` when the records have different keys. A list that also contains values other than records is a list, not a table. `[types.table.list-of-records]`
 

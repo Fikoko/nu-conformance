@@ -36,7 +36,7 @@ Paragraphs marked **Open question** describe current behavior that may not be in
 
 **Defined.** If the bytes produced by `\x` escapes don't form valid UTF-8, it is a parse error. Today the error is `nu::parser::parse_mismatch`. `[strings.double-quoted.escapes.hex-utf8]`
 
-**Open question:** the error is `parse_mismatch` with the message "expected any shape", which doesn't explain the problem, while every other bad escape gives `nu::parser::error` with a specific message.
+**Changes in 0.117.0** ([#19271](https://github.com/nushell/nushell/pull/19271)): the error is `nu::parser::error`.
 
 **Defined.** In a double-quoted string, `\u{...}` with 1 to 6 hex digits (upper or lower case) produces the Unicode character with that code point. An empty `\u{}`, more than 6 digits, a value above `10FFFF`, or a surrogate code point (`D800` to `DFFF`) is a parse error, `nu::parser::error`. `[strings.double-quoted.escapes.unicode]`
 
@@ -54,7 +54,7 @@ Paragraphs marked **Open question** describe current behavior that may not be in
 
 **Defined.** A raw string with no closing `'` followed by the right number of `#` is a parse error, `nu::parser::unexpected_eof`. `[strings.raw.unclosed]`
 
-**Open question:** unclosed single-quoted, double-quoted, backtick and interpolated strings all report `nu::parser::unclosed_delimiter`, but an unclosed raw string reports `nu::parser::unexpected_eof`.
+**Changes in 0.117.0** ([#19271](https://github.com/nushell/nushell/pull/19271)): the error is `nu::parser::unclosed_delimiter`.
 
 ## Backtick-quoted strings
 

@@ -1,7 +1,8 @@
-# id: types.float.inf-equals-neg-inf
+# id: types.float.inf-not-equal-neg-inf
 # rule: types.float.infinity-compare
 # expect: output
 # ---
-# true
+# false
 # ---
+# status: pending
 inf == -inf

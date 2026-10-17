@@ -2,7 +2,8 @@
 # rule: types.int.radix-sign
 # expect: output
 # ---
-# string
+# int
 # ---
+# status: pending
 let x = -0x10
 $x | describe

@@ -4,6 +4,10 @@ Behavior that the tests record as it is today, but that may not be intended. Eac
 
 If the maintainers decide to change one, the affected tests get the new expected result and `status: pending` until a release implements it.
 
+Questions marked **Resolved** have been decided by the maintainers. Their tests hold the new expected result with `status: pending` until the release that includes the change is the pinned version. The question text below the marker still describes the old behavior.
+
+Still open: S1, S4, S5, T5, T9, T14, O2, D3 (reading `mut` in `where`), D4, F1, F4 (range patterns), F5.
+
 All behavior below was checked against Nushell 0.116.1.
 
 ## Strings
@@ -23,6 +27,8 @@ Two same-kind quoted strings written together become one string that contains th
 
 ### S2. Invalid UTF-8 from `\x` escapes gives an unclear error
 
+**Resolved in 0.117.0** by [#19271](https://github.com/nushell/nushell/pull/19271): the error is now `nu::parser::error` (invalid UTF-8 from `\x` escapes in string).
+
 Rule: [`strings.double-quoted.escapes.hex-utf8`](rules/strings.md)
 
 ```nu
@@ -34,6 +40,8 @@ Rule: [`strings.double-quoted.escapes.hex-utf8`](rules/strings.md)
 Every other bad escape gives `nu::parser::error` with a message naming the problem (for example "invalid hex escape"). This one gives a generic parse mismatch. Should it report that the bytes are not valid UTF-8, and with which code?
 
 ### S3. Unclosed raw strings use a different error code
+
+**Resolved in 0.117.0** by [#19271](https://github.com/nushell/nushell/pull/19271): the error is now `nu::parser::unclosed_delimiter`.
 
 Rule: [`strings.raw.unclosed`](rules/strings.md)
 
@@ -74,6 +82,8 @@ This matches the Book ("a backtick-quoted string in the first position of an exp
 
 ### T1. Infinity compares as equal to every number
 
+**Resolved in 0.117.0** by [#19271](https://github.com/nushell/nushell/pull/19271): `inf` compares as larger than every finite number, and `[1.0 inf] | math max` is `inf`.
+
 Rule: [`types.float.infinity-compare`](rules/types.md)
 
 ```nu
@@ -88,6 +98,8 @@ This looks like a bug. Under IEEE 754, `inf > 1` is `true` and `inf == 1` is `fa
 
 ### T2. There is no unary minus for expressions
 
+**Resolved in 0.117.0** by [#19271](https://github.com/nushell/nushell/pull/19271): `-$x` and `-(expr)` negate their value.
+
 Rule: [`types.minus.literal-only`](rules/types.md)
 
 ```nu
@@ -100,6 +112,8 @@ A `-` before a parenthesized expression or a variable gives a string instead of 
 
 ### T3. A sign makes hex, octal and binary literals into strings
 
+**Resolved in 0.117.0** by [#19271](https://github.com/nushell/nushell/pull/19271): `-0x10` is `-16` and `+0b11` is `3`.
+
 Rule: [`types.int.radix-sign`](rules/types.md)
 
 ```nu
@@ -111,6 +125,8 @@ Rule: [`types.int.radix-sign`](rules/types.md)
 Should `-0x10` be `-16`, or a parse error?
 
 ### T4. Out-of-range integer literals become floats
+
+**Resolved in 0.117.0** by [#19271](https://github.com/nushell/nushell/pull/19271): an integer literal too large for 64 bits is a parse error. Add `.0` to write a float.
 
 Rule: [`types.int.too-large`](rules/types.md)
 
@@ -134,6 +150,8 @@ Digit separators in most languages must sit between digits. Is accepting a leadi
 
 ### T6. `inf` and `nan` ignore case, but `true` and `null` don't
 
+**Resolved in 0.117.0** by [#19271](https://github.com/nushell/nushell/pull/19271): only `inf`, `nan` and `NaN` are special floats. Other spellings, such as `INF` and `Nan`, are strings.
+
 Rules: [`types.float.special-case`](rules/types.md), [`types.bool.literals`](rules/types.md), [`types.nothing.literal`](rules/types.md)
 
 ```nu
@@ -144,6 +162,8 @@ Rules: [`types.float.special-case`](rules/types.md), [`types.bool.literals`](rul
 Should the float names be case-sensitive like the other keywords?
 
 ### T7. Literals just past the 64-bit limit saturate instead of failing
+
+**Resolved in 0.117.0** by [#19271](https://github.com/nushell/nushell/pull/19271): a filesize or duration literal that doesn't fit is a parse error, `nu::parser::literal_too_large`.
 
 Rules: [`types.duration.range`](rules/types.md), [`types.filesize.range`](rules/types.md)
 
@@ -157,6 +177,8 @@ Rules: [`types.duration.range`](rules/types.md), [`types.filesize.range`](rules/
 The limit check seems to let through values exactly at 2^63, which then saturate. This may be the same floating-point comparison issue in both places.
 
 ### T8. Invalid dates silently become strings
+
+**Resolved in 0.117.0** by [#19271](https://github.com/nushell/nushell/pull/19271): a word written like a date that isn't a valid date is a parse error.
 
 Rule: [`types.datetime.invalid`](rules/types.md)
 
@@ -181,6 +203,8 @@ Should the two kinds of unit follow the same rule?
 
 ### T10. `+` works on plain numbers but not on durations or filesizes
 
+**Resolved in 0.117.0** by [#19271](https://github.com/nushell/nushell/pull/19271): `+5sec` and `+1kB` are numbers.
+
 Rules: [`types.duration.sign`](rules/types.md), [`types.filesize.literal`](rules/types.md)
 
 ```nu
@@ -193,6 +217,8 @@ This is related to T3: a sign is accepted in some literal forms and not others.
 
 ### T11. A stray `]` becomes part of a list item
 
+**Resolved in 0.117.0** by [#19271](https://github.com/nushell/nushell/pull/19271): `[1 2]]` is a parse error, `nu::parser::unbalanced_delimiter`.
+
 Rule: [`types.list.extra-close`](rules/types.md)
 
 ```nu
@@ -202,6 +228,8 @@ Rule: [`types.list.extra-close`](rules/types.md)
 An extra closing bracket silently turns the last item into a string instead of being reported. Should this be a parse error?
 
 ### T12. Which bare words can be record keys and column names
+
+**Resolved in 0.117.0** by [#19271](https://github.com/nushell/nushell/pull/19271): `{true: 1}` and `[[1 2]; [3 4]]` parse, with the keys as strings.
 
 Rules: [`types.record.keys`](rules/types.md), [`types.table.literal`](rules/types.md)
 
@@ -214,6 +242,8 @@ Rules: [`types.record.keys`](rules/types.md), [`types.table.literal`](rules/type
 A number works as a record key but not as a table column name, and `true` and `null` work as neither. Should these follow one rule?
 
 ### T13. Duplicate keys in a literal are found at runtime
+
+**Resolved in 0.117.0** by [#19271](https://github.com/nushell/nushell/pull/19271): a duplicate field in a record or table literal is a parse error, `nu::parser::column_defined_twice`.
 
 Rules: [`types.record.duplicate-keys`](rules/types.md), [`types.table.duplicate-header`](rules/types.md)
 
@@ -239,6 +269,8 @@ There is no literal for an empty table with named columns. Is that intended?
 
 ### O1. `not` binds tighter than documented
 
+**Resolved in 0.117.0** by [#19271](https://github.com/nushell/nushell/pull/19271): `not` has the precedence `help operators` lists, so `not $a == $b` means `not ($a == $b)`.
+
 Rule: [`operators.not.operand`](rules/operators.md)
 
 ```nu
@@ -263,6 +295,8 @@ null == 1              # => false
 
 ### O3. The smallest integer `mod -1` overflows
 
+**Resolved in 0.117.0** by [#19271](https://github.com/nushell/nushell/pull/19271): `(-9223372036854775808) mod -1` is `0`.
+
 Rule: [`operators.arith.overflow`](rules/operators.md)
 
 ```nu
@@ -272,6 +306,8 @@ Rule: [`operators.arith.overflow`](rules/operators.md)
 The result is `0`, which fits in 64 bits. The error comes from the underlying integer remainder check. Is it intended?
 
 ### O4. `in` is stricter about number types than `==`
+
+**Resolved in 0.117.0** by [#19271](https://github.com/nushell/nushell/pull/19271): `1 in [1.0]` is `true`.
 
 Rule: [`operators.member.types`](rules/operators.md)
 
@@ -287,6 +323,8 @@ Integers and floats compare equal everywhere else. Should `in` accept an integer
 
 ### D1. `unlet` on a constant does nothing
 
+**Resolved in 0.117.0** by [#19271](https://github.com/nushell/nushell/pull/19271): `unlet` on a constant is a compile error, `nu::compile::invalid_literal`.
+
 Rule: [`declarations.unlet.const`](rules/declarations.md)
 
 ```nu
@@ -298,6 +336,8 @@ There is no error, and the constant is still there. Should `unlet` delete consta
 
 ### D2. `unlet $in` is accepted
 
+**Resolved in 0.117.0** by [#19271](https://github.com/nushell/nushell/pull/19271): `unlet $in` is a compile error, `nu::compile::invalid_literal`.
+
 Rule: [`declarations.unlet.builtins`](rules/declarations.md)
 
 ```nu
@@ -308,6 +348,8 @@ unlet $in    # => no error
 The lang guide says `$in` is a built-in variable that can't be deleted.
 
 ### D3. `where` can use `mut` variables, unlike other closures
+
+**Partly resolved in 0.117.0** by [#19271](https://github.com/nushell/nushell/pull/19271): assigning to a `mut` variable inside a `where` condition is a parse error, since the assignment never took effect. Reading one, as below, still works, so the question stays open.
 
 Rule: [`scope.closure.where`](rules/scope.md)
 
@@ -346,6 +388,8 @@ Anything that isn't a list, range or table is iterated as a single item, and `nu
 
 ### F2. `for` can't start a pipeline, but `while` and `loop` can
 
+**Resolved in 0.117.0** by [#19271](https://github.com/nushell/nushell/pull/19271): `while` and `loop` can't be piped, like `for`.
+
 Rule: [`flow.for.statement`](rules/flow.md)
 
 ```nu
@@ -358,6 +402,8 @@ All three are statements that produce `null`. Should they follow the same rule?
 
 ### F3. A non-boolean condition gives different errors in `if` and `while`
 
+**Resolved in 0.117.0** by [#19271](https://github.com/nushell/nushell/pull/19271): `if 1 { }` gives `nu::shell::type_mismatch`, the same as `while`.
+
 Rules: [`flow.if.condition`](rules/flow.md), [`flow.while.condition`](rules/flow.md)
 
 ```nu
@@ -368,6 +414,8 @@ while 1 { }    # => Error: nu::shell::type_mismatch
 The same mistake gives two different error codes. Should they be the same?
 
 ### F4. A float inside an integer range doesn't match a range pattern
+
+**Related fix in 0.117.0** in [#19271](https://github.com/nushell/nushell/pull/19271): a float range includes its end value correctly, so `2.0 in 1.0..2.0` is `true`. The range pattern below still doesn't match `1.5`, so the question stays open.
 
 Rule: [`flow.match.range-values`](rules/flow.md)
 
@@ -393,6 +441,8 @@ The lang guide says values are compared "by type as well as value". Integers and
 
 ### C1. A parameter after `...rest` takes the first argument
 
+**Resolved in 0.117.0** by [#19271](https://github.com/nushell/nushell/pull/19271): a parameter after the rest parameter is a parse error, `nu::parser::positional_after_rest`.
+
 Rule: [`commands.params.after-rest`](rules/commands.md)
 
 ```nu
@@ -403,6 +453,8 @@ f 1 2 3    # => {r: [2, 3], a: 1}
 The signature reads as if `a` were the last argument, but it receives the first. Should a parameter after the rest parameter be a parse error?
 
 ### C2. Duplicate parameters and short flags are accepted
+
+**Resolved in 0.117.0** by [#19271](https://github.com/nushell/nushell/pull/19271): repeated parameter, flag and short-flag names, and a `--help` flag, are parse errors.
 
 Rule: [`commands.params.duplicates`](rules/commands.md)
 
@@ -415,6 +467,8 @@ def f [--help] { 'mine' }; f --help                   # => shows the built-in he
 These look like mistakes in the signature, but none is reported. Should they be parse errors?
 
 ### C3. `@deprecated --report every` warns only once in a script
+
+**Resolved in 0.117.0** by [#19271](https://github.com/nushell/nushell/pull/19271): a script shows every deprecation warning.
 
 Rule: [`commands.attr.deprecated-report`](rules/commands.md)
 

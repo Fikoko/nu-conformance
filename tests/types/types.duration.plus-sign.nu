@@ -1,7 +1,8 @@
-# id: types.duration.no-plus-sign
+# id: types.duration.plus-sign
 # rule: types.duration.sign
 # expect: output
 # ---
-# list<string>
+# list<duration>
 # ---
+# status: pending
 [+5sec] | describe

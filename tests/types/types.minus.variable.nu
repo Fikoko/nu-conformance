@@ -2,7 +2,8 @@
 # rule: types.minus.literal-only
 # expect: output
 # ---
-# "-$x"
+# -5
 # ---
+# status: pending
 let x = 5
 -$x | to nuon

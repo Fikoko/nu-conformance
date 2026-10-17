@@ -1,5 +1,6 @@
 # id: types.duration.too-large
 # rule: types.duration.range
-# expect: compile-error
-# error: nu::compile::invalid_literal
+# expect: parse-error
+# error: nu::parser::literal_too_large
+# status: pending
 106752day

@@ -26,7 +26,9 @@ Paragraphs marked **Open question** describe current behavior that may not be in
 
 **Defined.** `where` can read `mut` variables from outside, whether its condition is written as a row condition, a block or a closure with a parameter. `[scope.closure.where]`
 
-**Open question:** the lang guide says the closures given to `where` can't capture `mut` variables, but `where` accepts them in every form, including `{|v| $v > $x }`.
+**Changes in 0.117.0** ([#19271](https://github.com/nushell/nushell/pull/19271)): assigning to a `mut` variable inside a `where` condition is a parse error, `nu::parser::expected_keyword`. Reading one is still allowed.
+
+**Open question:** the lang guide says the closures given to `where` can't capture `mut` variables, but `where` can read them in every form, including `{|v| $v > $x }`.
 
 ## Custom commands
 
