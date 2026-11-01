@@ -1,0 +1,83 @@
+name: winnow
+
+# Runs the suite against the winnow parser from nushell/nushell#19140, which
+# is not merged yet, so this builds Nushell from its branch. Differences from
+# the default parser are reported in the job summary. The job is allowed to
+# fail: the branch changes often, and the main conformance job is the one that
+# must stay green.
+
+on:
+  push:
+    branches: [master]
+  schedule:
+    - cron: '17 4 * * *'
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Branch or commit of fdncred/nushell to test'
+        default: 'winnow_parser'
+
+env:
+  WINNOW_REPO: fdncred/nushell
+  WINNOW_REF: ${{ inputs.ref || 'winnow_parser' }}
+
+jobs:
+  compare:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check out the winnow branch
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.WINNOW_REPO }}
+          ref: ${{ env.WINNOW_REF }}
+          path: nushell
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: |
+            nushell
+            nushell/crates/nu-parser/winnow/tools/nushell-harness -> target
+
+      - name: Build nu
+        working-directory: nushell
+        run: cargo build --release --no-default-features
+
+      - name: Read pinned Nushell version
+        id: pinned
+        run: echo "version=$(tr -d '[:space:]' < NU_VERSION)" >> "$GITHUB_OUTPUT"
+
+      # The runner scripts run on the pinned release; only the tested binary
+      # comes from the branch.
+      - uses: hustcer/setup-nu@v3
+        with:
+          version: "${{ steps.pinned.outputs.version }}"
+
+      - name: Compare the default parser with winnow
+        shell: bash
+        env:
+          NU_BIN: ${{ github.workspace }}/nushell/target/release/nu
+        run: |
+          echo "Testing ${WINNOW_REPO}@$(git -C nushell rev-parse --short HEAD)" >> "$GITHUB_STEP_SUMMARY"
+          echo >> "$GITHUB_STEP_SUMMARY"
+          nu compare.nu --markdown | tee -a "$GITHUB_STEP_SUMMARY"
+
+      # The branch's own harness compares the syntax trees of both parsers and
+      # counts what winnow parsed itself. It is a separate workspace that can
+      # lag behind the branch, so a build failure here doesn't stop the job.
+      - name: Compare syntax trees with the branch's harness
+        if: always()
+        continue-on-error: true
+        working-directory: nushell/crates/nu-parser/winnow/tools/nushell-harness
+        run: |
+          cargo build --release --bin frontends
+          {
+            echo
+            echo '## Syntax trees (`frontends compare`)'
+            echo
+            echo '```'
+            ./target/release/frontends compare "$GITHUB_WORKSPACE/tests" 2>&1 | tail -n 60
+            echo '```'
+          } | tee -a "$GITHUB_STEP_SUMMARY"

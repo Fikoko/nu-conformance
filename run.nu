@@ -10,6 +10,8 @@ use lib/test-format.nu *
 def main [
     filter?: string     # only run tests whose ID contains this text
     --verbose (-v)      # also list passing and skipped tests
+    --json              # print the results as JSON instead of a report
+    --option: string    # run the tested binary with this experimental option, e.g. winnow-parser
 ] {
     let root = $env.FILE_PWD
     let nu_bin = $env.NU_BIN? | default $nu.current-exe
@@ -17,15 +19,23 @@ def main [
 
     let tested_version = ^$nu_bin --version | str trim
     let pinned = open --raw ($root | path join NU_VERSION) | str trim
-    print $"Testing ($nu_bin) \(version ($tested_version)) on ($os)"
-    if $tested_version != $pinned {
-        print $"(ansi yellow)warning:(ansi reset) the suite targets ($pinned), results may differ"
+    if not $json {
+        let with = if $option == null { '' } else { $" with experimental option ($option)" }
+        print $"Testing ($nu_bin) \(version ($tested_version))($with) on ($os)"
+        if $tested_version != $pinned {
+            print $"(ansi yellow)warning:(ansi reset) the suite targets ($pinned), results may differ"
+        }
+        print ''
     }
-    print ''
 
     let results = test-files $root
     | where {|f| ($filter == null) or (($f | path parse | get stem) | str contains $filter) }
-    | each {|path| check-test $nu_bin $os $path }
+    | each {|path| check-test $nu_bin $os $path $option }
+
+    if $json {
+        print ($results | to json)
+        return
+    }
 
     let shown = if $verbose { $results } else { $results | where status not-in [pass skip] }
     for r in $shown { print-result $r }
@@ -40,7 +50,7 @@ def main [
 }
 
 # Run one test file and classify the result.
-def check-test [nu_bin: string, os: string, path: path]: nothing -> record {
+def check-test [nu_bin: string, os: string, path: path, option?: string]: nothing -> record {
     let id = $path | path parse | get stem
     let h = parse-header $path
 
@@ -52,7 +62,7 @@ def check-test [nu_bin: string, os: string, path: path]: nothing -> record {
         return {id: $id, status: skip, reason: $"not run on ($os)"}
     }
 
-    let run = run-isolated $nu_bin $path $h.expect
+    let run = run-isolated $nu_bin $path $h.expect $option
     let verdict = judge $h $run
     let pending = ($h.status? | default 'active') == 'pending'
 
@@ -65,16 +75,18 @@ def check-test [nu_bin: string, os: string, path: path]: nothing -> record {
 }
 
 # Run a test in a fresh temporary directory, without user config.
-def run-isolated [nu_bin: string, path: path, expect: string]: nothing -> record {
+def run-isolated [nu_bin: string, path: path, expect: string, option?: string]: nothing -> record {
     let script = $path | path expand
     let tmp = mktemp --directory
     let run = do {
         cd $tmp
+        # The flag, not NU_EXPERIMENTAL_OPTIONS: nu ignores the variable with --no-config-file.
+        let opts = if $option == null { [] } else { [--experimental-options $option] }
         with-env {NO_COLOR: '1'} {
             if $expect == 'parses' {
-                ^$nu_bin --no-config-file -c $"nu-check --debug ($script | to nuon)" | complete
+                ^$nu_bin --no-config-file ...$opts -c $"nu-check --debug ($script | to nuon)" | complete
             } else {
-                ^$nu_bin --no-config-file --error-style plain $script | complete
+                ^$nu_bin --no-config-file ...$opts --error-style plain $script | complete
             }
         }
     }

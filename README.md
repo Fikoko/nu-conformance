@@ -51,6 +51,7 @@ rules/        draft rule text, one file per lang guide chapter
 tests/        conformance tests, one folder per chapter
 lib/          shared helpers for reading tests and rules
 run.nu        test runner
+compare.nu    compares the default parser with an experimental one
 check.nu      checks rule IDs and the links between rules and tests
 NU_VERSION    the Nushell release the suite targets
 open-questions.md   behavior that may not be intended
@@ -65,11 +66,20 @@ nu run.nu      # run the tests
 nu check.nu    # check rules and test links
 ```
 
-To test a different binary, such as a build with the winnow parser, set `NU_BIN`:
+To test a different binary, set `NU_BIN`:
 
 ```nu
 NU_BIN=/path/to/nu nu run.nu
 ```
+
+To run the tested binary with an experimental option, pass `--option`. `compare.nu` runs the suite twice on the same binary, with and without the option, and lists every test whose result differs:
+
+```nu
+nu run.nu --option winnow-parser
+NU_BIN=/path/to/winnow/nu nu compare.nu    # default parser vs winnow-parser
+```
+
+The option has to be passed this way: `nu` ignores `NU_EXPERIMENTAL_OPTIONS` when it runs a script with `--no-config-file`, as the runner does. The [winnow workflow](.github/workflows/winnow.yml) builds the winnow branch from [nushell/nushell#19140](https://github.com/nushell/nushell/pull/19140) daily and runs this comparison.
 
 ## Contributing
 

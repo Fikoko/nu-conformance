@@ -53,7 +53,9 @@ Same process as the pilot, chapter by chapter, in roughly this order:
 
 ## Phase 3: Connecting with Nushell
 
-- Run the suite against `nu --experimental-options winnow-parser` in CI, next to the default parser. Any difference is a bug in one of them.
+- [x] Run the suite against `nu --experimental-options winnow-parser`, next to the default parser. Any difference is a bug in one of them. `compare.nu` does this, and the [winnow workflow](.github/workflows/winnow.yml) runs it daily against the branch from [nushell/nushell#19140](https://github.com/nushell/nushell/pull/19140).
+  - First run (branch at `7e6f622`, 1 Nov 2026): winnow parsed all 1,050 test files itself (2,826 statements, none handed to the classic parser), and every test gave the same result with both parsers. The branch's `frontends compare` found one difference in the syntax trees, in a file with a parse error.
+- [ ] Add tests wherever winnow and the default parser could disagree but the suite has no test yet.
 - Move rule text into the lang guide through pull requests, if the maintainers agree.
 - Propose running the suite in Nushell's own CI once it is stable.
 
