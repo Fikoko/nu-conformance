@@ -51,3 +51,21 @@ The tests use `nu` itself as the external command, run with `$nu.current-exe`, s
 **Defined.** Redirecting the same stream twice, such as `o> file` together with `o+e>|`, is a parse error, `nu::parser::multiple_redirections`. `[pipelines.redirect.multiple]`
 
 **Defined.** `complete` treats whatever is piped into it as the command's stdout, so after `e>|` its `stdout` field holds the command's stderr, and its `stderr` field holds the command's stdout. `[pipelines.redirect.complete]`
+
+**Defined.** The long forms `out>`, `err>`, `out+err>` and `err+out>`, and the short form `e+o>`, are the same as `o>`, `e>` and `o+e>`. The same goes for `err>|`, `out+err>|`, `err+out>|` and `e+o>|`. There is no `o>|`: a plain `|` pipes stdout, and `o>|` is a parse error, `nu::parser::parse_mismatch`. `[pipelines.redirect.forms]`
+
+**Defined.** `o>> file`, `e>> file` and `o+e>> file` append to the file instead of replacing it. `[pipelines.redirect.append]`
+
+**Defined.** A redirection can come anywhere after the command name. Words after it are still arguments of the command, so `echo a o> f.txt b` writes `a` and `b` to the file. After a value that isn't a command call, such as `"a" o> f.txt`, nothing more may follow, which is a parse error, `nu::parser::parse_mismatch`. `[pipelines.redirect.position]`
+
+**Defined.** The output of an internal command or a value can be written to a file with `o>` or `o>>`. A list is written one item per line, each followed by a line break, while a string is written without a line break after it. `[pipelines.redirect.values]`
+
+**Defined.** The file name can be a bare word, a quoted string, a variable or a subexpression. The redirection operator must be followed by a space: `o>file` is an ordinary argument, not a redirection. A redirection without a file name is a parse error, `nu::parser::parse_mismatch`. `[pipelines.redirect.target]`
+
+**Defined.** A redirection must follow a command. One at the start of a pipeline, right after `|`, or after another `e>|` is a parse error, `nu::parser::unexpected_redirection`. `[pipelines.redirect.misplaced]`
+
+**Defined.** A redirection after a block run with `do`, or after a subexpression, applies to the external commands' output inside it. `[pipelines.redirect.blocks]`
+
+**Defined.** A command whose stdout is redirected to a file outputs `null`. `[pipelines.redirect.file-output]`
+
+**Unspecified.** Redirecting stdout and stderr separately to the same file, as in `e> f.txt o> f.txt`, is accepted, but what the file contains afterwards is unspecified. Use `o+e>` to write both streams to one file. `[pipelines.redirect.same-file]`

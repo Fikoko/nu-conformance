@@ -55,7 +55,13 @@ Same process as the pilot, chapter by chapter, in roughly this order:
 
 - [x] Run the suite against `nu --experimental-options winnow-parser`, next to the default parser. Any difference is a bug in one of them. `compare.nu` does this, and the [winnow workflow](.github/workflows/winnow.yml) runs it daily against the branch from [nushell/nushell#19140](https://github.com/nushell/nushell/pull/19140).
   - First run (branch at `7e6f622`, 1 Nov 2026): winnow parsed all 1,050 test files itself (2,826 statements, none handed to the classic parser), and every test gave the same result with both parsers. The branch's `frontends compare` found one difference in the syntax trees, in a file with a parse error.
-- [ ] Add tests wherever winnow and the default parser could disagree but the suite has no test yet.
+- [x] Add tests wherever winnow and the default parser could disagree but the suite has no test yet. fdncred listed the likely areas in [#19140](https://github.com/nushell/nushell/pull/19140):
+  - [x] Error recovery, odd input and errors the classic parser reads past ([Source Text and Parse Errors](rules/parsing.md))
+  - [x] Alias targets ([Aliases](rules/aliases.md))
+  - [x] Redirections in odd places ([Pipelines](rules/pipelines.md#redirection))
+  - [x] Statements that change which commands exist mid-block: `use`, `overlay`, `hide`, `source`, `run` ([Modules and Overlays](rules/modules.md), [Scripts](rules/scripts.md))
+  - [x] Long blocks, where winnow parses ahead on a second thread ([Source Text and Parse Errors](rules/parsing.md#long-blocks))
+  - Second run (branch at `7e6f622`, 2 Nov 2026), with these 348 new tests: still no differences in results. `frontends compare` found one new difference in the syntax trees, for a redirection after `|`.
 - Move rule text into the lang guide through pull requests, if the maintainers agree.
 - Propose running the suite in Nushell's own CI once it is stable.
 

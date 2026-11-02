@@ -34,7 +34,7 @@ Paragraphs marked **Open question** describe current behavior that may not be in
 
 **Defined.** A custom command's body sees the variables in scope where the command is defined, not where it is called, with their values at the time of definition. Like a closure, it can't use a `mut` variable from outside, which is a parse error, `nu::parser::expected_keyword`. Parameters and variables declared in the body are local to the command. `[scope.def.variables]`
 
-**Defined.** `def` and `alias` definitions are visible only in the block where they are made, but in the whole block, including before the line that defines them. A command defined inside another command, a block or a closure isn't visible outside it. `[scope.def.visibility]`
+**Defined.** `def` and `alias` definitions are visible only in the block where they are made. A `def` is visible in the whole block, including before the line that defines it, while an alias is visible only from the statement after it ([Aliases](aliases.md#using-aliases)). A command defined inside another command, a block or a closure isn't visible outside it. `[scope.def.visibility]`
 
 **Defined.** Defining the same command twice in one block is a parse error, `nu::parser::duplicate_command_def`. `[scope.def.duplicate]`
 

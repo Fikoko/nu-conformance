@@ -78,6 +78,17 @@ def check-test [nu_bin: string, os: string, path: path, option?: string]: nothin
 def run-isolated [nu_bin: string, path: path, expect: string, option?: string]: nothing -> record {
     let script = $path | path expand
     let tmp = mktemp --directory
+    # Files a test needs before it is parsed, such as a module for `use`.
+    # `use`, `source` and `run` look for files next to the script, so a test
+    # that has them is copied into the temporary directory and run from there.
+    let fixtures = $script | path parse | update extension files | path join
+    let script = if ($fixtures | path exists) {
+        for f in (ls --all $fixtures) { cp --recursive $f.name $tmp }
+        cp $script $tmp
+        $tmp | path join ($script | path basename)
+    } else {
+        $script
+    }
     let run = do {
         cd $tmp
         # The flag, not NU_EXPERIMENTAL_OPTIONS: nu ignores the variable with --no-config-file.

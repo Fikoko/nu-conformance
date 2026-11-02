@@ -1,0 +1,2 @@
+def helper [] { 'h' }
+'ran'

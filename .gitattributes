@@ -1,3 +1,8 @@
 # Tests compare exact bytes, including newlines inside strings, so keep LF
 # line endings on every platform.
 * text=auto eol=lf
+
+# These tests need exact bytes: NUL, invalid UTF-8, CR line endings, a
+# byte-order mark. Keep them exactly as committed, and treat them as binary
+# in diffs so patches carry them byte for byte.
+tests/parsing/raw/** -text -diff -whitespace

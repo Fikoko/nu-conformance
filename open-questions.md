@@ -8,7 +8,7 @@ Questions marked **Resolved** have been decided by the maintainers. Their tests 
 
 Questions marked **Answered** describe intended behavior, as confirmed by the maintainers in [#1](https://github.com/Fikoko/nu-conformance/issues/1). Their tests stay as they are. Answers that call for documentation changes are collected under [Documentation fixes](#documentation-fixes).
 
-Every question has been resolved or answered. New questions are added as they come up.
+The questions from S1 to C3 have all been resolved or answered. Newer questions are added below them as they come up.
 
 All behavior below was checked against Nushell 0.116.1.
 
@@ -506,6 +506,63 @@ g; g; g    # => one nu::parser::deprecated warning
 
 The Book and `help "attr deprecated"` say `--report every` warns on every call. In a script there is one warning, the same as the default. Does `every` only apply across separate REPL entries?
 
+## Aliases
+
+### A1. A pipe in an alias becomes an argument
+
+Rule: [`aliases.expansion.pipe`](rules/aliases.md)
+
+```nu
+alias q = echo 1 | str length
+q | to nuon    # => [1, "|", str, length]
+```
+
+The Book says an alias with a pipe "won't work". It is accepted, and the `|` and the words after it are passed to the command as arguments, with no error. Should a `|` in an alias expansion be a parse error?
+
+## Source text
+
+### P1. A byte-order mark at the start of a script isn't skipped
+
+Rule: [`parsing.source.bom`](rules/parsing.md)
+
+```nu
+# a file containing EF BB BF, then: 1 + 1
+# => Error: nu::shell::external_command
+```
+
+The byte-order mark becomes part of the first word. Some editors on Windows add one when saving a file as UTF-8, and the script then fails with a confusing error. Should `nu` skip a byte-order mark at the start of a file?
+
+## Modules
+
+### H1. `hide` in a nested block also hides the name outside it
+
+Rule: [`modules.hide.scope`](rules/modules.md)
+
+```nu
+def f [] { 1 }
+def g [] { hide f }    # g is never called
+f                      # => Error: nu::shell::external_command
+```
+
+`help hide` says it hides definitions "in the current scope". A `hide` inside `do { }`, `if` or the body of a command that never runs also hides the name in the enclosing block. Should `hide` only affect the block it is written in, like `def`, `alias` and `use`?
+
+## Scripts
+
+### R1. Commands from a script run with `run` leak into the caller
+
+Rule: [`scripts.run.definitions`](rules/scripts.md)
+
+```nu
+# h.nu:  def helper [] { 'h' }; 'ran'
+run h.nu | ignore
+helper             # => h
+
+# d.nu:  def main [x: int] { $x * 2 }
+run d.nu 21        # in a script: prints 42, then Error: nu::parser::missing_positional
+```
+
+The Book says the script "runs in its own scope", and its variables and environment changes do stay inside it. Its commands don't: they are still defined after `run`, including `main`. In a script, `nu` then calls that `main` again when the script ends, without arguments, which fails if `main` has required parameters. Should the commands stay inside the script, as its variables do?
+
 ## Documentation fixes
 
 Places where `nu` is right and the documentation is wrong, incomplete or unclear. Each could be a small pull request to [nushell.github.io](https://github.com/nushell/nushell.github.io).
@@ -519,3 +576,5 @@ Places where `nu` is right and the documentation is wrong, incomplete or unclear
 - **Book:** the octal example `0o[1234567]` is not a valid binary literal.
 - **Lang guide, Strings:** the backtick string section is still in note form.
 - **Lang guide, Pipelines:** the "Best practices" heading has no content.
+- **Book, Aliases:** `help hi` prints ``Alias for `greet` ``, with backticks around the command name.
+- **Book, Aliases:** "Piping in Aliases" says an alias with a pipe won't work. It would help to say what happens instead: the pipe is passed as an argument (A1).

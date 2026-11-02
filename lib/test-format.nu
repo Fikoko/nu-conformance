@@ -14,7 +14,8 @@ export def parse-header [path: path]: nothing -> record {
     mut expected = []
     mut block = 'before'   # before, inside, after
 
-    for line in (open --raw $path | lines) {
+    # A byte-order mark before the header is skipped (see parsing.source.bom).
+    for line in (open --raw $path | lines | update 0 { str replace --regex '^\u{feff}' '' }) {
         if not ($line starts-with '#') { break }
         let body = $line | str replace --regex '^# ?' ''
 
@@ -120,5 +121,5 @@ export def valid-rule-id [id: string]: nothing -> bool {
 # Find all test files under a directory.
 export def test-files [root: path]: nothing -> list<path> {
     cd $root
-    glob 'tests/**/*.nu' | sort
+    glob 'tests/**/*.nu' --exclude ['**/*.files/**'] | sort
 }

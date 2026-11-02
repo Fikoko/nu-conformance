@@ -1,0 +1,7 @@
+# id: modules.use.position-before
+# rule: modules.use.position
+# expect: runtime-error
+# error: nu::shell::external_command
+module m { export def nu-conformance-f [] { 1 } }
+nu-conformance-f
+use m nu-conformance-f

@@ -63,6 +63,8 @@ What each `expect` value checks:
 Things to get right:
 
 - **Print data, not tables.** End the script with `| to nuon`. Rendered tables depend on terminal width and theme, so they make tests unreliable.
+- **Files a test needs go in a folder next to it.** `use`, `source` and `run` read their files while the script is parsed, so a test can't create them itself. Put them in a folder named after the test with `.files` added, such as `tests/modules/modules.file.basic.files/m.nu`. Its contents, and the test itself, are copied into the test's temporary directory, and the test runs from there. `.nu` files in the folder aren't run as tests.
+- **Tests that need exact bytes go in `tests/parsing/raw/`.** Git keeps files there byte for byte, so they can contain a NUL byte, invalid UTF-8, CR line endings or a byte-order mark. The header still has to be readable: plain `# ` lines ending in LF. A byte-order mark before the header is allowed.
 - **Use bytes for invisible characters.** `to nuon` writes newlines and control characters as they are, which makes expected output hard to read. For those, compare bytes instead: `"a\nb" | into binary | to nuon` gives `0x[610A62]`.
 - **Only the last value is printed.** A script's output is the value of its last pipeline. To check more than one value, `print` the earlier ones: `print (1 | to nuon)`.
 - **Error tests check the code, not the message.** Messages are worded for people and change freely. Codes are more stable, though they may still change while the parser is being reworked.

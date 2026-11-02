@@ -1,0 +1,2 @@
+def libf [] { 'lib' }
+'last'
