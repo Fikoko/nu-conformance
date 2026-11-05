@@ -14,7 +14,7 @@ Tests that need exact bytes, such as a NUL byte, invalid UTF-8 or Windows line e
 
 **Defined.** A UTF-8 byte-order mark at the start of a file is not skipped. It becomes part of the first word, so a script that starts with one usually fails with an unknown command, a runtime error, `nu::shell::external_command`. `[parsing.source.bom]`
 
-**Open question:** editors on Windows sometimes save files with a byte-order mark, and a script saved that way doesn't run.
+**Changes in 0.117.0** ([#19415](https://github.com/nushell/nushell/pull/19415)): a byte-order mark at the start of a script, a module file or a config file is skipped.
 
 **Defined.** A line ends with LF or with CR LF. A CR LF inside a string literal is kept. A CR on its own doesn't end a line. `[parsing.source.line-endings]`
 

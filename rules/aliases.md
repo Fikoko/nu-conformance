@@ -20,7 +20,7 @@ Where an alias is visible is covered in [Variable Scope](scope.md#custom-command
 
 **Defined.** The expansion ends at the end of the line or at `;`. A `|` in it doesn't start a pipeline: it is passed to the command as an argument, together with the words after it. `[aliases.expansion.pipe]`
 
-**Open question:** the Book says an alias with a pipe "won't work", but it is accepted and the pipe silently becomes an argument.
+**Changes in 0.117.0** ([#19415](https://github.com/nushell/nushell/pull/19415)): a `|` or a redirection in an alias expansion is a parse error, `nu::parser::cant_alias_expression`.
 
 **Defined.** Most parser keywords can't be the target of an alias, which is a parse error, `nu::parser::cant_alias_keyword`. This includes `let`, `mut`, `const`, `def`, `alias`, `use`, `export`, `extern`, `module`, `hide`, `source`, `source-env`, `run`, `where`, `for`, `while`, `loop`, `break`, `continue` and `return`. `if`, `match`, `try` and the `overlay` commands can be aliased, and the alias then works like the keyword. `[aliases.expansion.keywords]`
 

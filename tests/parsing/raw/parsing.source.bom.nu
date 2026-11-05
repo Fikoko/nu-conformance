@@ -1,5 +1,8 @@
 ﻿# id: parsing.source.bom
 # rule: parsing.source.bom
-# expect: runtime-error
-# error: nu::shell::external_command
+# expect: output
+# ---
+# 2
+# ---
+# status: pending
 1 + 1

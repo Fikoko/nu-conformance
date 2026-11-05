@@ -42,7 +42,7 @@ Most tests define their modules inline with `module`. Tests that need module fil
 
 **Defined.** A `hide` inside a nested block, or inside the body of a command, also hides the name after that block, even if the block never runs. `[modules.hide.scope]`
 
-**Open question:** `help hide` says it hides definitions "in the current scope", but the effect reaches the enclosing scope.
+**Changes in 0.117.0** ([#19415](https://github.com/nushell/nushell/pull/19415)): `hide` inside a block hides the name only in that block.
 
 ## Overlays
 

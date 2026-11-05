@@ -1,5 +1,8 @@
 # id: scripts.run.definitions-main-required-param
 # rule: scripts.run.definitions
-# expect: parse-error
-# error: nu::parser::missing_positional
+# expect: output
+# ---
+# 42
+# ---
+# status: pending
 run d.nu 21

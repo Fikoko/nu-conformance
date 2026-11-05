@@ -1,0 +1,1 @@
+def zzhelper [] { 'zz' }

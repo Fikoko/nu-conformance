@@ -8,7 +8,7 @@ Questions marked **Resolved** have been decided by the maintainers. Their tests 
 
 Questions marked **Answered** describe intended behavior, as confirmed by the maintainers in [#1](https://github.com/Fikoko/nu-conformance/issues/1). Their tests stay as they are. Answers that call for documentation changes are collected under [Documentation fixes](#documentation-fixes).
 
-The questions from S1 to C3 have all been resolved or answered. Newer questions are added below them as they come up.
+The questions from S1 to C3 have all been resolved or answered, and so have A1, P1, H1 and R1, in [#19415](https://github.com/nushell/nushell/pull/19415). New questions are added below them as they come up.
 
 All behavior below was checked against Nushell 0.116.1.
 
@@ -339,7 +339,7 @@ Integers and floats compare equal everywhere else. Should `in` accept an integer
 
 ### D1. `unlet` on a constant does nothing
 
-**Resolved in 0.117.0** by [#19271](https://github.com/nushell/nushell/pull/19271): `unlet` on a constant is a compile error, `nu::compile::invalid_literal`.
+**Resolved in 0.117.0** by [#19271](https://github.com/nushell/nushell/pull/19271), revised in commit `27f09f9`: `unlet` on a constant hides its name, so using it afterwards is a parse error, `nu::parser::variable_not_found`.
 
 Rule: [`declarations.unlet.const`](rules/declarations.md)
 
@@ -510,6 +510,8 @@ The Book and `help "attr deprecated"` say `--report every` warns on every call. 
 
 ### A1. A pipe in an alias becomes an argument
 
+**Resolved in 0.117.0** by [#19415](https://github.com/nushell/nushell/pull/19415): a `|` or a redirection in an alias expansion is a parse error, `nu::parser::cant_alias_expression`.
+
 Rule: [`aliases.expansion.pipe`](rules/aliases.md)
 
 ```nu
@@ -522,6 +524,8 @@ The Book says an alias with a pipe "won't work". It is accepted, and the `|` and
 ## Source text
 
 ### P1. A byte-order mark at the start of a script isn't skipped
+
+**Resolved in 0.117.0** by [#19415](https://github.com/nushell/nushell/pull/19415): a byte-order mark at the start of a script, a module file or a config file is skipped.
 
 Rule: [`parsing.source.bom`](rules/parsing.md)
 
@@ -536,6 +540,8 @@ The byte-order mark becomes part of the first word. Some editors on Windows add 
 
 ### H1. `hide` in a nested block also hides the name outside it
 
+**Resolved in 0.117.0** by [#19415](https://github.com/nushell/nushell/pull/19415): `hide` inside a block hides the name only in that block.
+
 Rule: [`modules.hide.scope`](rules/modules.md)
 
 ```nu
@@ -549,6 +555,8 @@ f                      # => Error: nu::shell::external_command
 ## Scripts
 
 ### R1. Commands from a script run with `run` leak into the caller
+
+**Resolved in 0.117.0** by [#19415](https://github.com/nushell/nushell/pull/19415): the script's commands, including `main`, stay inside it.
 
 Rule: [`scripts.run.definitions`](rules/scripts.md)
 

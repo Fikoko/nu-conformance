@@ -54,7 +54,7 @@ Paragraphs marked **Open question** describe current behavior that may not be in
 
 **Defined.** `unlet` on a `const` does nothing: the constant can still be used afterwards. `[declarations.unlet.const]`
 
-**Changes in 0.117.0** ([#19271](https://github.com/nushell/nushell/pull/19271)): `unlet` on a constant is a compile error, `nu::compile::invalid_literal`.
+**Changes in 0.117.0** ([#19271](https://github.com/nushell/nushell/pull/19271), revised in `27f09f9`): `unlet` on a constant hides its name, so using it afterwards is a parse error, `nu::parser::variable_not_found`.
 
 **Defined.** `unlet` can't delete `$nu` or `$env`, and its arguments must be variable references. Both are compile errors, `nu::compile::invalid_literal`. `unlet $in` is accepted. `[declarations.unlet.builtins]`
 

@@ -12,7 +12,11 @@ Every test is itself a script run with `nu`, which matters for `main`: when a sc
 
 **Defined.** `source file` runs the file in the current scope, as if its text were written in place of the `source` statement. Its commands, variables and environment changes are available after it, but not before. Its last value is the value of the `source` statement. `[scripts.source.scope]`
 
+**Changes in 0.117.0** ([#19415](https://github.com/nushell/nushell/pull/19415)): a variable from a sourced file, including a `mut` variable, can be used inside a closure.
+
 **Defined.** A `source` inside a block makes the file's definitions available only in that block. A sourced file can itself use `source`. `[scripts.source.nested]`
+
+**Changes in 0.117.0** ([#19415](https://github.com/nushell/nushell/pull/19415)): sourcing a file again, after an earlier `source` of it in a block that has ended or after `hide`, defines its commands and variables again. Before, they stayed undefined.
 
 **Defined.** A syntax error in a sourced file is a parse error in the script that sources it, and nothing runs. `[scripts.source.errors]`
 
@@ -28,6 +32,6 @@ Every test is itself a script run with `nu`, which matters for `main`: when a sc
 
 **Defined.** The commands the script defines, including `main`, stay defined in the caller's scope after a `run` statement, though not after a `run` inside a subexpression. In a script, a `main` that came from `run` is then called by `nu` when the script ends, without arguments, and its output follows the script's own. `[scripts.run.definitions]`
 
-**Open question:** the Book says the script "runs in its own scope", but its commands leak into the caller. A leaked `main` runs a second time when the calling script ends, and fails if it has required parameters.
+**Changes in 0.117.0** ([#19415](https://github.com/nushell/nushell/pull/19415)): the script's commands, including `main`, stay inside it, so a `main` from `run` runs only once. Using one of its variables in the caller is a parse error, `nu::parser::variable_not_found`.
 
 **Defined.** `run --full-reparse` (`-f`) reads and parses the file again on each call. `[scripts.run.full-reparse]`
