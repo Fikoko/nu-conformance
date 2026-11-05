@@ -552,6 +552,19 @@ f                      # => Error: nu::shell::external_command
 
 `help hide` says it hides definitions "in the current scope". A `hide` inside `do { }`, `if` or the body of a command that never runs also hides the name in the enclosing block. Should `hide` only affect the block it is written in, like `def`, `alias` and `use`?
 
+### U1. A spread in `use` imports nothing
+
+Rule: [`modules.use.spread`](rules/modules.md)
+
+```nu
+module m { export def f [] { 'f' }; export def g [] { 'g' } }
+const names = [f g]
+use m ...$names
+f              # => Error: nu::shell::external_command
+```
+
+A spread after the module name is accepted, but nothing is imported, with no error, whether the list is a `let` or a `const`. The winnow parser reports `nu::parser::export_not_found` here instead, so the two parsers disagree. Should a `const` list spread into `use` import those names, or should a spread there be an error?
+
 ## Scripts
 
 ### R1. Commands from a script run with `run` leak into the caller

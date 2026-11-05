@@ -38,6 +38,14 @@ Tests that need exact bytes, such as a NUL byte, invalid UTF-8 or Windows line e
 
 **Defined.** A default value of the wrong type for a typed parameter is a parse error, `nu::parser::parse_mismatch`, in custom commands and in closures. So is a default that is an expression rather than a constant. In a closure, an `int` default for a `string` parameter is accepted. `[parsing.errors.defaults]`
 
+**Defined.** A raw string that isn't finished inside a list or record item, as in `[r#a]` or `{a: r#a}`, is a parse error, `nu::parser::parse_mismatch`. `[parsing.errors.items]`
+
+**Defined.** A variable that doesn't exist on the left of an assignment, as in `$bad.x = 1`, is a parse error, `nu::parser::variable_not_found`. In a closure with parameters given to `where`, `$it` isn't defined, and using it is a runtime error, `nu::shell::variable_not_found`. `NAME=$value` with no space is one word, which runs as a command. `[parsing.errors.variables]`
+
+**Defined.** Anything after a definition's body is a parse error. A redirection there with no file name is `nu::parser::parse_mismatch`, and one with a file name followed by more words is `nu::parser::error`. `[parsing.errors.definition-extra]`
+
+**Defined.** An attribute such as `@category` must be followed directly by the definition it applies to. A blank line between them is a parse error, `nu::parser::attribute_requires_definition`. `[parsing.errors.attributes]`
+
 ## Long blocks
 
 **Defined.** The length of a block doesn't change how it is parsed. In a block of several kilobytes, each statement sees the commands, imports, aliases, hidden names and overlays that the statements before it set up, exactly as in a short block, and an error near the end is reported the same way. `[parsing.long-blocks]`
@@ -55,5 +63,11 @@ These forms are accepted even though some look like mistakes. The tests make sur
 **Defined.** A trailing `.` after a cell path is ignored: `[1 2] | get 0.` is `1`. `$.a` is a cell path. `[parsing.lenient.cell-path]`
 
 **Defined.** A `|` inside a binary literal such as `0b[1|2]` splits the pipeline, so the parts are run as commands, which fails with `nu::shell::external_command`. Without `|`, an invalid digit is a parse error, `nu::parser::invalid_binary_string`. `[parsing.lenient.binary-pipe]`
+
+**Defined.** `else` can be followed by a value instead of a block, as in `if false { 'a' } else $x`. A value followed by more words is a parse error, `nu::parser::extra_positional`. `[parsing.lenient.else-value]`
+
+**Defined.** A word at the start of a command that looks like a range, but whose bounds don't parse, as in `..{a: }` or `HUGE..a`, is a command name, so running it fails with `nu::shell::external_command`. `[parsing.lenient.range-head]`
+
+**Defined.** A `|` at the end of a line continues the pipeline on the next line. If no command follows, the `|` is ignored. A `|` as the very last character of the file, with no line break after it, is a parse error, `nu::parser::unexpected_eof`. `[parsing.lenient.trailing-pipe]`
 
 **Defined.** Two subexpressions written together, as in `(1)(2)`, form a string from their values. `[parsing.lenient.adjacent]`

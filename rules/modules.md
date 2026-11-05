@@ -26,6 +26,10 @@ Most tests define their modules inline with `module`. Tests that need module fil
 
 **Defined.** `use name f` imports only the export `f`, and `use name [f g]` imports several. A name the module doesn't export is a parse error, `nu::parser::export_not_found`. Importing the same name twice is allowed. `[modules.use.names]`
 
+**Defined.** A spread after the module name, as in `use m ...$names`, is accepted but imports nothing, whether the list is a `let` or a `const`. A spread in place of the module name is a parse error, `nu::parser::missing_positional`. `[modules.use.spread]`
+
+**Open question:** a spread in `use` silently imports nothing. The winnow parser reports it as `nu::parser::export_not_found` instead.
+
 **Defined.** The module must be defined before the `use` that imports it. Otherwise, or when no module or file of that name exists, it is a parse error, `nu::parser::module_not_found`. `[modules.use.missing]`
 
 **Defined.** Imported definitions can be used from the statement after `use` (also after `;` on the same line) to the end of the block, but not before. A `use` inside a block imports only into that block. `use` can't be piped, which is a parse error, `nu::parser::unexpected_keyword`. `[modules.use.position]`

@@ -21,24 +21,24 @@ Nushell follows the same idea, with the [Language Reference Guide](https://www.n
 
 ## Status
 
-The core language chapters are drafted ([Phase 2](ROADMAP.md#phase-2-core-language) is complete), and chapters on aliases, parse errors, modules and scripts were added for comparing parsers ([Phase 3](ROADMAP.md#phase-3-connecting-with-nushell)): 387 rules and 1,405 tests, all passing on Linux, macOS and Windows.
+The core language chapters are drafted ([Phase 2](ROADMAP.md#phase-2-core-language) is complete), and chapters on aliases, parse errors, modules and scripts were added for comparing parsers ([Phase 3](ROADMAP.md#phase-3-connecting-with-nushell)): 395 rules and 1,437 tests, all passing on Linux, macOS and Windows.
 
 | Chapter | Rules | Tests |
 |---|---:|---:|
 | [Strings](rules/strings.md) | 44 | 127 |
 | [Types](rules/types.md) | 90 | 309 |
-| [Operators](rules/operators.md) | 45 | 160 |
+| [Operators](rules/operators.md) | 45 | 162 |
 | [Declarations](rules/declarations.md) | 18 | 64 |
 | [Variable Scope](rules/scope.md) | 13 | 49 |
 | [Flow Control](rules/flow.md) | 42 | 160 |
-| [Custom Commands](rules/commands.md) | 43 | 138 |
+| [Custom Commands](rules/commands.md) | 43 | 139 |
 | [Pipelines](rules/pipelines.md) | 28 | 80 |
 | [Aliases](rules/aliases.md) | 14 | 69 |
-| [Source Text and Parse Errors](rules/parsing.md) | 20 | 136 |
-| [Modules and Overlays](rules/modules.md) | 20 | 74 |
+| [Source Text and Parse Errors](rules/parsing.md) | 27 | 161 |
+| [Modules and Overlays](rules/modules.md) | 21 | 78 |
 | [Scripts](rules/scripts.md) | 10 | 39 |
 
-Behavior that may not be intended is listed in [open-questions.md](open-questions.md). All 39 questions so far have been answered. 23 were fixed in [nushell/nushell#19271](https://github.com/nushell/nushell/pull/19271) and 4 more (A1, P1, H1, R1) in [nushell/nushell#19415](https://github.com/nushell/nushell/pull/19415), both for 0.117.0. The rest were confirmed as intended in [#1](https://github.com/Fikoko/nu-conformance/issues/1), some with documentation fixes still to make. The 79 tests for the 0.117.0 changes are marked `pending` until it is released, and each affected rule has a "Changes in 0.117.0" note. See [ROADMAP.md](ROADMAP.md) for what's next.
+Behavior that may not be intended is listed in [open-questions.md](open-questions.md). All of the first 39 questions have been answered. 23 were fixed in [nushell/nushell#19271](https://github.com/nushell/nushell/pull/19271) and 4 more (A1, P1, H1, R1) in [nushell/nushell#19415](https://github.com/nushell/nushell/pull/19415), both for 0.117.0. The rest were confirmed as intended in [#1](https://github.com/Fikoko/nu-conformance/issues/1), some with documentation fixes still to make. The 79 tests for the 0.117.0 changes are marked `pending` until it is released, and each affected rule has a "Changes in 0.117.0" note. See [ROADMAP.md](ROADMAP.md) for what's next.
 
 Tests target the **current Nushell release**, recorded in [`NU_VERSION`](NU_VERSION).
 
