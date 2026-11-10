@@ -4,5 +4,4 @@
 # ---
 # []
 # ---
-# status: pending
 [{a: 1, b: true} {a: 2, b: false}] | where a == not b | to nuon

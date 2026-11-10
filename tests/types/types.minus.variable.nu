@@ -4,6 +4,5 @@
 # ---
 # -5
 # ---
-# status: pending
 let x = 5
 -$x | to nuon

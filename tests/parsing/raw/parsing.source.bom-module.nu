@@ -4,6 +4,5 @@
 # ---
 # hi
 # ---
-# status: pending
 use bommod.nu
 bommod

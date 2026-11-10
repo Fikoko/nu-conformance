@@ -2,7 +2,7 @@
 
 Draft rules for how `nu` reads the text of a script and reports syntax errors. Neither the lang guide nor the Book has a chapter on this, so these rules come from testing. They cover what a parser has to agree on beyond the grammar: which bytes it accepts, which error it reports first, and which unusual forms it accepts.
 
-**Checked against:** Nushell 0.116.1.
+**Checked against:** Nushell 0.117.0.
 
 Tests that need exact bytes, such as a NUL byte, invalid UTF-8 or Windows line endings, are in `tests/parsing/raw/`, which Git keeps byte for byte. Paragraphs marked **Open question** describe current behavior that may not be intended, and the questions are listed in [`open-questions.md`](../open-questions.md).
 
@@ -12,9 +12,9 @@ Tests that need exact bytes, such as a NUL byte, invalid UTF-8 or Windows line e
 
 **Defined.** Code and string literals must be valid UTF-8. Invalid bytes there are a parse error, `nu::parser::non_utf8`. Invalid bytes in a comment are ignored. `[parsing.source.utf8]`
 
-**Defined.** A UTF-8 byte-order mark at the start of a file is not skipped. It becomes part of the first word, so a script that starts with one usually fails with an unknown command, a runtime error, `nu::shell::external_command`. `[parsing.source.bom]`
+**Defined.** A UTF-8 byte-order mark at the start of a script, a module file or a config file is skipped. `[parsing.source.bom]`
 
-**Changes in 0.117.0** ([#19415](https://github.com/nushell/nushell/pull/19415)): a byte-order mark at the start of a script, a module file or a config file is skipped.
+*Changed in 0.117.0 by [#19415](https://github.com/nushell/nushell/pull/19415).*
 
 **Defined.** A line ends with LF or with CR LF. A CR LF inside a string literal is kept. A CR on its own doesn't end a line. `[parsing.source.line-endings]`
 

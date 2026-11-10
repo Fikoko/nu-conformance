@@ -130,7 +130,7 @@ Rules are marked **defined**, **implementation-defined** or **unspecified**.
 
 **Status:** decided
 
-The syntax reference is the grammar from [nushell/nushell#19140](https://github.com/nushell/nushell/pull/19140) (Markdown, with BNF/EBNF planned). This project links to it at a fixed commit and does not maintain its own grammar. The link will be updated once the grammar lands and has a permanent home.
+The syntax reference is [nushell/grammar](https://github.com/nushell/grammar) (Markdown, with generated BNF and EBNF), which started in [nushell/nushell#19140](https://github.com/nushell/nushell/pull/19140) and moved to its own repository in November 2026. This project links to it at a fixed commit (`53338fb`) and does not maintain its own grammar. The commit is updated when the grammar changes in a way that matters for the rules.
 
 **Why:** two grammars would drift apart and undercut the point of the project.
 

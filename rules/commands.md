@@ -2,11 +2,11 @@
 
 Draft rules for the [Custom Commands](https://www.nushell.sh/lang-guide/chapters/custom_commands.html) chapter of the lang guide, and the Book's [Custom Commands](https://www.nushell.sh/book/custom_commands.html) page it points to. It covers defining and calling commands, names, shadowing, parameters, flags, rest parameters, closures, input and output types, `def --wrapped`, documentation, attributes and `def --env`. The lang guide's [Type Signatures](https://www.nushell.sh/lang-guide/chapters/types/type_signatures.html) page is covered here too.
 
-**Checked against:** Nushell 0.116.1.
+**Checked against:** Nushell 0.117.0.
 
 Where a command's body can see variables, and how `def --env` works, is covered in [Variable Scope](scope.md#custom-commands). `return` is covered in [Flow Control](flow.md#return), and spreading arguments in [Operators](operators.md#spread).
 
-Paragraphs marked **Open question** describe current behavior that may not be intended, **Confirmed** paragraphs record behavior the maintainers have confirmed as intended, and **Changes in 0.117.0** notes describe decided changes that aren't released yet. The rules record what `nu` does today, and the questions are listed in [`open-questions.md`](../open-questions.md).
+Paragraphs marked **Open question** describe current behavior that may not be intended, **Confirmed** paragraphs record behavior the maintainers have confirmed as intended, and *Changed in* lines say which release changed a rule, and which pull request decided it. The rules record what `nu` does today, and the questions are listed in [`open-questions.md`](../open-questions.md).
 
 **Defined.** `def name [parameters] { body }` defines a custom command, which is then called like a built-in command. Arguments and flags are parsed and type-checked while parsing. `[commands.intro]`
 
@@ -48,13 +48,13 @@ Paragraphs marked **Open question** describe current behavior that may not be in
 
 **Defined.** Required positional parameters must come before optional ones, otherwise it is a parse error, `nu::parser::required_after_optional`. A command can have only one rest parameter, otherwise it is a parse error, `nu::parser::multiple_rest_params`. `[commands.params.order]`
 
-**Defined.** A positional parameter written after the rest parameter receives the first argument, and the rest parameter receives the others. `[commands.params.after-rest]`
+**Defined.** A positional parameter after the rest parameter is a parse error, `nu::parser::positional_after_rest`. `[commands.params.after-rest]`
 
-**Changes in 0.117.0** ([#19271](https://github.com/nushell/nushell/pull/19271)): a positional parameter after the rest parameter is a parse error, `nu::parser::positional_after_rest`.
+*Changed in 0.117.0 by [#19271](https://github.com/nushell/nushell/pull/19271).*
 
-**Defined.** Two parameters with the same name, or two flags with the same short name, are accepted. The later parameter gets the value, and the short flag sets only the first flag that declared it. `[commands.params.duplicates]`
+**Defined.** Two parameters or flags with the same name, or two flags with the same short name, are a parse error, `nu::parser::duplicate_parameter`. `[commands.params.duplicates]`
 
-**Changes in 0.117.0** ([#19271](https://github.com/nushell/nushell/pull/19271)): two parameters or flags with the same name, or the same short name, are a parse error, `nu::parser::duplicate_parameter`.
+*Changed in 0.117.0 by [#19271](https://github.com/nushell/nushell/pull/19271).*
 
 **Defined.** A signature can combine required, optional and defaulted positional parameters, switches and flags with values and defaults. `[commands.params.kinds]`
 
@@ -72,9 +72,9 @@ Paragraphs marked **Open question** describe current behavior that may not be in
 
 **Defined.** A record spread into a call (`...$record`) passes its keys as flags. A key that isn't a flag of the command is a runtime error, `nu::shell::error`. `[commands.flags.spread]`
 
-**Defined.** Every custom command has a `--help` (`-h`) flag that shows its help. Declaring a `--help` flag yourself is accepted, but `--help` still shows the help. `[commands.flags.help]`
+**Defined.** Every custom command has a `--help` (`-h`) flag that shows its help. Declaring a `--help` flag yourself is a parse error, `nu::parser::error`. `[commands.flags.help]`
 
-**Changes in 0.117.0** ([#19271](https://github.com/nushell/nushell/pull/19271)): declaring a `--help` flag is a parse error, `nu::parser::error`.
+*Changed in 0.117.0 by [#19271](https://github.com/nushell/nushell/pull/19271).*
 
 ## Rest parameters
 
@@ -116,9 +116,9 @@ Paragraphs marked **Open question** describe current behavior that may not be in
 
 **Defined.** `@deprecated` marks a command as deprecated. Calling it still runs it, and also reports a warning, `nu::parser::deprecated`, including the message given to `@deprecated`. `[commands.attr.deprecated]`
 
-**Defined.** By default, the deprecation warning is reported once, for the first call. In a script, `--report every` also reports only one warning for several calls. `[commands.attr.deprecated-report]`
+**Defined.** By default, the deprecation warning is reported once, for the first call. With `--report every`, it is reported on each call. A script shows every deprecation warning, not only the first one. `[commands.attr.deprecated-report]`
 
-**Changes in 0.117.0** ([#19271](https://github.com/nushell/nushell/pull/19271)): every deprecation warning is reported, so `--report every` warns on each call.
+*Changed in 0.117.0 by [#19271](https://github.com/nushell/nushell/pull/19271).*
 
 **Defined.** An attribute name that isn't a known attribute is a parse error, `nu::parser::unknown_command`. `[commands.attr.unknown]`
 

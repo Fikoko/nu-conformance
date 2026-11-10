@@ -4,5 +4,4 @@
 # ---
 # true
 # ---
-# status: pending
 inf > 1

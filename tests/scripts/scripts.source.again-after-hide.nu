@@ -4,7 +4,6 @@
 # ---
 # zz
 # ---
-# status: pending
 source zz.nu
 hide zzhelper
 source zz.nu

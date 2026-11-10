@@ -4,5 +4,4 @@
 # ---
 # true
 # ---
-# status: pending
 1.0 in [1]

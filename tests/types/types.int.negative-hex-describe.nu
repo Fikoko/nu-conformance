@@ -4,6 +4,5 @@
 # ---
 # int
 # ---
-# status: pending
 let x = -0x10
 $x | describe

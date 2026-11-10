@@ -2,11 +2,11 @@
 
 Draft rules for strings, following the [Strings and Text Formatting](https://www.nushell.sh/lang-guide/chapters/strings_and_text.html) chapter of the lang guide and the [String](https://www.nushell.sh/lang-guide/chapters/types/basic_types/string.html) type page. Where the lang guide defers to the Book's [Working with Strings](https://www.nushell.sh/book/working_with_strings.html), the Book's examples are tested too.
 
-**Checked against:** Nushell 0.116.1.
+**Checked against:** Nushell 0.117.0.
 
 Commands that work on strings (`str ...`, `split ...` and so on) are out of scope ([D1](../design-decisions.md#d1-scope-language-first-commands-later)). Operators on strings belong to the Operators chapter.
 
-Paragraphs marked **Open question** describe current behavior that may not be intended, **Confirmed** paragraphs record behavior the maintainers have confirmed as intended, and **Changes in 0.117.0** notes describe decided changes that aren't released yet. The rules record what `nu` does today, and the questions are listed in [`open-questions.md`](../open-questions.md).
+Paragraphs marked **Open question** describe current behavior that may not be intended, **Confirmed** paragraphs record behavior the maintainers have confirmed as intended, and *Changed in* lines say which release changed a rule, and which pull request decided it. The rules record what `nu` does today, and the questions are listed in [`open-questions.md`](../open-questions.md).
 
 **Defined.** A string is a sequence of Unicode characters. Nushell has six forms of string literal: single-quoted, double-quoted, raw, backtick-quoted, bare words and interpolated strings. They differ in how they are delimited, whether they process escape sequences, and whether they evaluate expressions. `[strings.intro]`
 
@@ -34,9 +34,9 @@ Paragraphs marked **Open question** describe current behavior that may not be in
 
 **Defined.** In a double-quoted string, `\x` followed by exactly two hex digits (upper or lower case) produces the byte with that value. Several `\x` escapes in a row can form a multi-byte UTF-8 character. `\x` followed by fewer than two hex digits, or by characters that aren't hex digits, is a parse error, `nu::parser::error`. `[strings.double-quoted.escapes.hex]`
 
-**Defined.** If the bytes produced by `\x` escapes don't form valid UTF-8, it is a parse error. Today the error is `nu::parser::parse_mismatch`. `[strings.double-quoted.escapes.hex-utf8]`
+**Defined.** If the bytes produced by `\x` escapes don't form valid UTF-8, it is a parse error, `nu::parser::error`. `[strings.double-quoted.escapes.hex-utf8]`
 
-**Changes in 0.117.0** ([#19271](https://github.com/nushell/nushell/pull/19271)): the error is `nu::parser::error`.
+*Changed in 0.117.0 by [#19271](https://github.com/nushell/nushell/pull/19271).*
 
 **Defined.** In a double-quoted string, `\u{...}` with 1 to 6 hex digits (upper or lower case) produces the Unicode character with that code point. An empty `\u{}`, more than 6 digits, a value above `10FFFF`, or a surrogate code point (`D800` to `DFFF`) is a parse error, `nu::parser::error`. `[strings.double-quoted.escapes.unicode]`
 
@@ -52,9 +52,9 @@ Paragraphs marked **Open question** describe current behavior that may not be in
 
 **Defined.** A raw string may start with `r` followed by any number of `#` (at least one) and `'`. It then ends at the first `'` followed by the same number of `#`. A `'` followed by fewer `#` is part of the string. `[strings.raw.hashes]`
 
-**Defined.** A raw string with no closing `'` followed by the right number of `#` is a parse error, `nu::parser::unexpected_eof`. `[strings.raw.unclosed]`
+**Defined.** A raw string with no closing `'` followed by the right number of `#` is a parse error, `nu::parser::unclosed_delimiter`. `[strings.raw.unclosed]`
 
-**Changes in 0.117.0** ([#19271](https://github.com/nushell/nushell/pull/19271)): the error is `nu::parser::unclosed_delimiter`.
+*Changed in 0.117.0 by [#19271](https://github.com/nushell/nushell/pull/19271).*
 
 ## Backtick-quoted strings
 

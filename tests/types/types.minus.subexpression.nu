@@ -4,5 +4,4 @@
 # ---
 # -5
 # ---
-# status: pending
 -(2 + 3) | to nuon

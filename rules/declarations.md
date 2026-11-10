@@ -2,11 +2,11 @@
 
 Draft rules for the [Declarations](https://www.nushell.sh/lang-guide/chapters/declarations.html) chapter of the lang guide, and the Book's [Variables](https://www.nushell.sh/book/variables.html) page it points to.
 
-**Checked against:** Nushell 0.116.1.
+**Checked against:** Nushell 0.117.0.
 
 Assignment operators are covered in the [Operators](operators.md#assignment) chapter, and where declarations are visible in [Variable Scope](scope.md).
 
-Paragraphs marked **Open question** describe current behavior that may not be intended, **Confirmed** paragraphs record behavior the maintainers have confirmed as intended, and **Changes in 0.117.0** notes describe decided changes that aren't released yet. The rules record what `nu` does today, and the questions are listed in [`open-questions.md`](../open-questions.md).
+Paragraphs marked **Open question** describe current behavior that may not be intended, **Confirmed** paragraphs record behavior the maintainers have confirmed as intended, and *Changed in* lines say which release changed a rule, and which pull request decided it. The rules record what `nu` does today, and the questions are listed in [`open-questions.md`](../open-questions.md).
 
 **Defined.** `let`, `mut` and `const` declare variables. `let` and `mut` values are computed when the code runs, `const` values while it is parsed. Only `mut` variables can be reassigned. `unlet` removes a variable. `[declarations.intro]`
 
@@ -42,7 +42,7 @@ Paragraphs marked **Open question** describe current behavior that may not be in
 
 **Defined.** `const name = value` evaluates its value while the code is parsed. The value can be a literal, an operator expression, another constant, `$nu`, or a call to a built-in command that can run at parse time. Any other command is a parse error, `nu::parser::error` (wrapping `nu::shell::not_a_const_command`), and is reported before any of the script runs. `[declarations.const.parse-time]`
 
-**Implementation-defined.** Which built-in commands can run at parse time (`scope commands | where is_const`). In Nushell 0.116.1, `length`, `ls` and `date now` can't. `[declarations.const.commands]`
+**Implementation-defined.** Which built-in commands can run at parse time (`scope commands | where is_const`). In Nushell 0.117.0, `length`, `ls` and `date now` can't. `[declarations.const.commands]`
 
 **Defined.** A `const` value can't use `let` or `mut` variables, and places that need a parse-time value, such as the path given to `use`, can't use them either. That is a parse error, `nu::parser::error` (wrapping `nu::shell::not_a_constant`). `[declarations.const.constant-operands]`
 
@@ -52,10 +52,10 @@ Paragraphs marked **Open question** describe current behavior that may not be in
 
 **Defined.** `unlet $a $b ...` deletes the named `let` or `mut` variables. Using one afterwards is a runtime error, `nu::shell::variable_not_found`. The name can be declared again. `[declarations.unlet.delete]`
 
-**Defined.** `unlet` on a `const` does nothing: the constant can still be used afterwards. `[declarations.unlet.const]`
+**Defined.** `unlet` on a `const` hides its name, so using the constant afterwards is a parse error, `nu::parser::variable_not_found`. `[declarations.unlet.const]`
 
-**Changes in 0.117.0** ([#19271](https://github.com/nushell/nushell/pull/19271), revised in `27f09f9`): `unlet` on a constant hides its name, so using it afterwards is a parse error, `nu::parser::variable_not_found`.
+*Changed in 0.117.0 by [#19271](https://github.com/nushell/nushell/pull/19271), revised in `27f09f9`.*
 
-**Defined.** `unlet` can't delete `$nu` or `$env`, and its arguments must be variable references. Both are compile errors, `nu::compile::invalid_literal`. `unlet $in` is accepted. `[declarations.unlet.builtins]`
+**Defined.** `unlet` can't delete `$nu`, `$env` or `$in`, and its arguments must be variable references. All of these are compile errors, `nu::compile::invalid_literal`. `[declarations.unlet.builtins]`
 
-**Changes in 0.117.0** ([#19271](https://github.com/nushell/nushell/pull/19271)): `unlet $in` is a compile error, `nu::compile::invalid_literal`.
+*Changed in 0.117.0 by [#19271](https://github.com/nushell/nushell/pull/19271).*

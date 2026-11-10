@@ -4,5 +4,4 @@
 # ---
 # ["Infinity", "-Infinity"]
 # ---
-# status: pending
 [Infinity -Infinity] | to nuon

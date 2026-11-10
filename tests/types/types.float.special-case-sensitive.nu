@@ -4,5 +4,4 @@
 # ---
 # ["INF", "infinity", NaN, "NAN"]
 # ---
-# status: pending
 [INF infinity nan NAN] | to nuon

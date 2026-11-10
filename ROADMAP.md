@@ -63,6 +63,7 @@ Same process as the pilot, chapter by chapter, in roughly this order:
   - [x] Long blocks, where winnow parses ahead on a second thread ([Source Text and Parse Errors](rules/parsing.md#long-blocks))
   - Second run (branch at `7e6f622`, 2 Nov 2026), with these 348 new tests: still no differences in results. `frontends compare` found one new difference in the syntax trees, for a redirection after `|`.
   - Third run (branch at `567ddc8`, 5 Nov 2026), with 32 tests for forms fdncred's mutation testing found: 4 differences in results. Winnow rejects invalid UTF-8 in a comment, which fdncred says is deliberate (question pending), and reports a spread in `use` as `export_not_found` where the classic parser ignores it (U1).
+- [x] Bump to 0.117.0 (released 9 Nov 2026): the 83 pending tests for #19271 and #19415 became active, and the rules describe the new behavior.
 - Move rule text into the lang guide through pull requests, if the maintainers agree.
 - Propose running the suite in Nushell's own CI once it is stable.
 

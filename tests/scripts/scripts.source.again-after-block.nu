@@ -4,7 +4,6 @@
 # ---
 # zz
 # ---
-# status: pending
 do { source zz.nu }
 source zz.nu
 zzhelper

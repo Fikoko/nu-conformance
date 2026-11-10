@@ -2,11 +2,11 @@
 
 Draft rules for the [Flow control](https://www.nushell.sh/lang-guide/chapters/flow_control/00_flow_control_overview.html) chapter of the lang guide, and the Book's [Control Flow](https://www.nushell.sh/book/control_flow.html) page it points to. The lang guide has no page for `for`, so its rules come from the Book. It covers `if`/`else`, `for`, `while`, `loop`, `break`, `continue`, `match`, `try`/`catch`/`finally` and `return`.
 
-**Checked against:** Nushell 0.116.1.
+**Checked against:** Nushell 0.117.0.
 
 How blocks and closures see variables is covered in [Variable Scope](scope.md).
 
-Paragraphs marked **Open question** describe current behavior that may not be intended, **Confirmed** paragraphs record behavior the maintainers have confirmed as intended, and **Changes in 0.117.0** notes describe decided changes that aren't released yet. The rules record what `nu` does today, and the questions are listed in [`open-questions.md`](../open-questions.md).
+Paragraphs marked **Open question** describe current behavior that may not be intended, **Confirmed** paragraphs record behavior the maintainers have confirmed as intended, and *Changed in* lines say which release changed a rule, and which pull request decided it. The rules record what `nu` does today, and the questions are listed in [`open-questions.md`](../open-questions.md).
 
 **Defined.** `if`, `match` and `try` are expressions and produce a value. `for`, `while` and `loop` are statements: they produce `null`. The bodies of all four are blocks, not closures, so they can assign to `mut` variables from outside. `[flow.intro]`
 
@@ -18,9 +18,9 @@ Paragraphs marked **Open question** describe current behavior that may not be in
 
 **Defined.** `else` is followed by an expression, not necessarily a block, so `if false { 1 } else 100` is `100`, and `else if` chains are checked in order. `else` must be on the same line as the closing `}` of the previous block. On its own line it is a command name. A condition followed by something other than a block is a parse error, `nu::parser::parse_mismatch`. `[flow.if.else]`
 
-**Defined.** The condition is an expression and doesn't need parentheses. It must evaluate to a `bool`. Any other value, including `null`, numbers, strings and lists, is a runtime error, `nu::shell::cant_convert`. A condition in an `else if` that isn't reached is not evaluated. `[flow.if.condition]`
+**Defined.** The condition is an expression and doesn't need parentheses. It must evaluate to a `bool`. Any other value, including `null`, numbers, strings and lists, is a runtime error, `nu::shell::type_mismatch`, as in `while`. A condition in an `else if` that isn't reached is not evaluated. `[flow.if.condition]`
 
-**Changes in 0.117.0** ([#19271](https://github.com/nushell/nushell/pull/19271)): a condition that isn't a boolean is a runtime error, `nu::shell::type_mismatch`, the same as in `while`.
+*Changed in 0.117.0 by [#19271](https://github.com/nushell/nushell/pull/19271).*
 
 ## `for`
 
@@ -32,27 +32,27 @@ Paragraphs marked **Open question** describe current behavior that may not be in
 
 **Defined.** The loop variable may have a type annotation (`for i: int in ...`) and may be written with a leading `$`. It is immutable, and it and any variables declared in the body are not visible after the loop. `[flow.for.variable]`
 
-**Defined.** `for` produces `null`, and it can't be used inside a pipeline, not even as the first element, which is a parse error, `nu::parser::unexpected_keyword`. In parentheses it can be used as a value. `for` takes no flags. `[flow.for.statement]`
+**Defined.** `for` produces `null`, and it can't be used inside a pipeline, not even as the first element, which is a parse error, `nu::parser::unexpected_keyword`. The same goes for `while` and `loop`. In parentheses it can be used as a value. `for` takes no flags. `[flow.for.statement]`
 
-**Changes in 0.117.0** ([#19271](https://github.com/nushell/nushell/pull/19271)): `while` and `loop` can't be piped either, so all three loops follow the same rule.
+*Changed in 0.117.0 by [#19271](https://github.com/nushell/nushell/pull/19271).*
 
 ## `while`
 
-**Defined.** `while condition { ... }` evaluates the condition before each iteration and runs the block while it is `true`, so the block may run zero times. The condition must evaluate to a `bool`, otherwise it is a runtime error, `nu::shell::type_mismatch`. A block given as the condition is a closure, so it can't read `mut` variables, which is a parse error, `nu::parser::expected_keyword`. `[flow.while.condition]`
+**Defined.** `while condition { ... }` evaluates the condition before each iteration and runs the block while it is `true`, so the block may run zero times. The condition must evaluate to a `bool`, otherwise it is a runtime error, `nu::shell::type_mismatch`, as in `if`. A block given as the condition is a closure, so it can't read `mut` variables, which is a parse error, `nu::parser::expected_keyword`. `[flow.while.condition]`
 
-**Changes in 0.117.0** ([#19271](https://github.com/nushell/nushell/pull/19271)): `if` gives the same error, `nu::shell::type_mismatch`.
+*Changed in 0.117.0 by [#19271](https://github.com/nushell/nushell/pull/19271).*
 
-**Defined.** `while` produces `null` and doesn't accept pipeline input, which is a parse error, `nu::parser::input_type_mismatch`. `while true { ... }` behaves like `loop { ... }`. `[flow.while.statement]`
+**Defined.** `while` produces `null`. It can't be piped, which is a parse error, `nu::parser::unexpected_keyword`, as for `for`. `while true { ... }` behaves like `loop { ... }`. `[flow.while.statement]`
 
-**Changes in 0.117.0** ([#19271](https://github.com/nushell/nushell/pull/19271)): piping `while` is a parse error, `nu::parser::unexpected_keyword`, as for `for`.
+*Changed in 0.117.0 by [#19271](https://github.com/nushell/nushell/pull/19271).*
 
 ## `loop`
 
 **Defined.** `loop { ... }` runs its block repeatedly until a `break`, a `return` from the surrounding custom command, or an error stops it. `[flow.loop.repeat]`
 
-**Defined.** `loop` produces `null`, and the value of its block is discarded on every iteration. It doesn't accept pipeline input, which is a parse error, `nu::parser::input_type_mismatch`. `[flow.loop.statement]`
+**Defined.** `loop` produces `null`, and the value of its block is discarded on every iteration. It can't be piped, which is a parse error, `nu::parser::unexpected_keyword`, as for `for`. `[flow.loop.statement]`
 
-**Changes in 0.117.0** ([#19271](https://github.com/nushell/nushell/pull/19271)): piping `loop` is a parse error, `nu::parser::unexpected_keyword`, as for `for`.
+*Changed in 0.117.0 by [#19271](https://github.com/nushell/nushell/pull/19271).*
 
 **Defined.** Inside a custom command, `return` leaves the loop and the command, and can carry a value out. `[flow.loop.return]`
 

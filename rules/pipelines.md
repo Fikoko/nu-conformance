@@ -2,7 +2,7 @@
 
 Draft rules for the [Pipelines](https://www.nushell.sh/lang-guide/chapters/pipelines.html) chapter of the lang guide, and the Book's [Pipelines](https://www.nushell.sh/book/pipelines.html) page it points to. It covers `$in`, how statements and pipelines are separated, external commands in pipelines, and redirection.
 
-**Checked against:** Nushell 0.116.1.
+**Checked against:** Nushell 0.117.0.
 
 The tests use `nu` itself as the external command, run with `$nu.current-exe`, so they behave the same on every platform. The lang guide's `demo.nu` (`print "foo"; print -e "barbar"`) is written as a `demo` command.
 

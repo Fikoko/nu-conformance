@@ -38,14 +38,15 @@ The core language chapters are drafted ([Phase 2](ROADMAP.md#phase-2-core-langua
 | [Modules and Overlays](rules/modules.md) | 21 | 78 |
 | [Scripts](rules/scripts.md) | 10 | 39 |
 
-Behavior that may not be intended is listed in [open-questions.md](open-questions.md). All of the first 39 questions have been answered. 23 were fixed in [nushell/nushell#19271](https://github.com/nushell/nushell/pull/19271) and 4 more (A1, P1, H1, R1) in [nushell/nushell#19415](https://github.com/nushell/nushell/pull/19415), both for 0.117.0. The rest were confirmed as intended in [#1](https://github.com/Fikoko/nu-conformance/issues/1), some with documentation fixes still to make. The 79 tests for the 0.117.0 changes are marked `pending` until it is released, and each affected rule has a "Changes in 0.117.0" note. See [ROADMAP.md](ROADMAP.md) for what's next.
+Behavior that may not be intended is listed in [open-questions.md](open-questions.md). All of the first 39 questions have been answered. 23 were fixed in [nushell/nushell#19271](https://github.com/nushell/nushell/pull/19271) and 4 more (A1, P1, H1, R1) in [nushell/nushell#19415](https://github.com/nushell/nushell/pull/19415), both for 0.117.0. The rest were confirmed as intended in [#1](https://github.com/Fikoko/nu-conformance/issues/1), some with documentation fixes still to make. The suite targets 0.117.0, which includes all of these changes, and each changed rule says which pull request changed it. See [ROADMAP.md](ROADMAP.md) for what's next.
 
 Tests target the **current Nushell release**, recorded in [`NU_VERSION`](NU_VERSION).
 
 ## Related work
 
 - [Language Reference Guide](https://www.nushell.sh/lang-guide/): the human-readable reference this project builds on.
-- [nushell/nushell#19140](https://github.com/nushell/nushell/pull/19140): draft PR with the winnow parser, a grammar (Markdown, with BNF/EBNF planned) and a railroad diagram. This project links to that grammar as its syntax reference rather than maintaining its own.
+- [nushell/grammar](https://github.com/nushell/grammar): the Nushell grammar, written from nu-parser's source, as Markdown with generated BNF, EBNF and railroad diagrams, plus a corpus of inputs with the parser's verdict on each. This project links to it as its syntax reference rather than maintaining its own.
+- [nushell/nushell#19140](https://github.com/nushell/nushell/pull/19140): draft PR with the winnow parser, which this suite is run against daily.
 - [nushell/nushell#18925](https://github.com/nushell/nushell/issues/18925): the NUON specification.
 
 ## Repository layout

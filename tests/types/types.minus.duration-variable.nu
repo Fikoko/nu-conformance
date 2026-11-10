@@ -4,6 +4,5 @@
 # ---
 # true
 # ---
-# status: pending
 let x = 5sec
 (-$x) == -5sec

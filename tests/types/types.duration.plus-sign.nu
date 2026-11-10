@@ -4,5 +4,4 @@
 # ---
 # list<duration>
 # ---
-# status: pending
 [+5sec] | describe

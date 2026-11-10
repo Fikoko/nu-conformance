@@ -2,5 +2,4 @@
 # rule: strings.double-quoted.escapes.hex-utf8
 # expect: parse-error
 # error: nu::parser::error
-# status: pending
 "\xFF"

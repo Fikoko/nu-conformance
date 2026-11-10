@@ -2,7 +2,7 @@
 
 Draft rules for aliases. The lang guide has no chapter on aliases yet, so these follow the Book's [Aliases](https://www.nushell.sh/book/aliases.html) page.
 
-**Checked against:** Nushell 0.116.1.
+**Checked against:** Nushell 0.117.0.
 
 Where an alias is visible is covered in [Variable Scope](scope.md#custom-commands). Paragraphs marked **Open question** describe current behavior that may not be intended, and the questions are listed in [`open-questions.md`](../open-questions.md).
 
@@ -18,9 +18,9 @@ Where an alias is visible is covered in [Variable Scope](scope.md#custom-command
 
 **Defined.** The expansion must start with a command. A value such as a variable, a number or a quoted string is a parse error, `nu::parser::cant_alias_expression`. An empty expansion is a parse error, `nu::parser::incorrect_value`. `[aliases.expansion.not-a-command]`
 
-**Defined.** The expansion ends at the end of the line or at `;`. A `|` in it doesn't start a pipeline: it is passed to the command as an argument, together with the words after it. `[aliases.expansion.pipe]`
+**Defined.** The expansion ends at the end of the line or at `;`. A `|` or a redirection in it is a parse error, `nu::parser::cant_alias_expression`. `[aliases.expansion.pipe]`
 
-**Changes in 0.117.0** ([#19415](https://github.com/nushell/nushell/pull/19415)): a `|` or a redirection in an alias expansion is a parse error, `nu::parser::cant_alias_expression`.
+*Changed in 0.117.0 by [#19415](https://github.com/nushell/nushell/pull/19415).*
 
 **Defined.** Most parser keywords can't be the target of an alias, which is a parse error, `nu::parser::cant_alias_keyword`. This includes `let`, `mut`, `const`, `def`, `alias`, `use`, `export`, `extern`, `module`, `hide`, `source`, `source-env`, `run`, `where`, `for`, `while`, `loop`, `break`, `continue` and `return`. `if`, `match`, `try` and the `overlay` commands can be aliased, and the alias then works like the keyword. `[aliases.expansion.keywords]`
 

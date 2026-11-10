@@ -4,5 +4,4 @@
 # ---
 # true
 # ---
-# status: pending
 not "a" == "b"

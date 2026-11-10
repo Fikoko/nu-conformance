@@ -4,5 +4,4 @@
 # ---
 # mut
 # ---
-# status: pending
 do { source m.nu; $zzmut }

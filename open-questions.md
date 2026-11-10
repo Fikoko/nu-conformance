@@ -4,13 +4,13 @@ Behavior that the tests record as it is today, but that may not be intended. Eac
 
 If the maintainers decide to change one, the affected tests get the new expected result and `status: pending` until a release implements it.
 
-Questions marked **Resolved** have been decided by the maintainers. Their tests hold the new expected result with `status: pending` until the release that includes the change is the pinned version. The question text below the marker still describes the old behavior.
+Questions marked **Resolved** have been decided by the maintainers. Once the release with the change is the pinned version, their tests check the new behavior. All of them so far are fixed in 0.117.0. The question text below the marker still describes the old behavior.
 
 Questions marked **Answered** describe intended behavior, as confirmed by the maintainers in [#1](https://github.com/Fikoko/nu-conformance/issues/1). Their tests stay as they are. Answers that call for documentation changes are collected under [Documentation fixes](#documentation-fixes).
 
 The questions from S1 to C3 have all been resolved or answered, and so have A1, P1, H1 and R1, in [#19415](https://github.com/nushell/nushell/pull/19415). New questions are added below them as they come up.
 
-All behavior below was checked against Nushell 0.116.1.
+The behavior in the questions below was found in Nushell 0.116.1. The suite now targets 0.117.0.
 
 ## Strings
 

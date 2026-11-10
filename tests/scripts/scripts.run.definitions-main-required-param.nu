@@ -4,5 +4,4 @@
 # ---
 # 42
 # ---
-# status: pending
 run d.nu 21

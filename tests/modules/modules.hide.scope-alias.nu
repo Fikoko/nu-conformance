@@ -4,7 +4,6 @@
 # ---
 # a
 # ---
-# status: pending
 alias nu-conformance-a = echo a
 do { hide nu-conformance-a }
 nu-conformance-a

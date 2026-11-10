@@ -4,5 +4,4 @@
 # ---
 # int
 # ---
-# status: pending
 -(5) | describe

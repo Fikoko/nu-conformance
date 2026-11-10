@@ -4,5 +4,4 @@
 # ---
 # list<int>
 # ---
-# status: pending
 [+0b11] | describe

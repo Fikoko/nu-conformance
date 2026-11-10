@@ -4,7 +4,6 @@
 # ---
 # 1
 # ---
-# status: pending
 def nu-conformance-f [] { 1 }
 def g [] { hide nu-conformance-f }
 nu-conformance-f

@@ -4,5 +4,4 @@
 # ---
 # list<filesize>
 # ---
-# status: pending
 [+1kB] | describe

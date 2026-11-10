@@ -4,6 +4,5 @@
 # ---
 # -4
 # ---
-# status: pending
 let x = 5
 1 + -$x

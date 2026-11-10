@@ -2,7 +2,7 @@
 
 Draft rules for modules, `use`, `hide` and overlays. The lang guide has no chapter on these yet, so they follow the Book's [Using Modules](https://www.nushell.sh/book/modules/using_modules.html), [Creating Modules](https://www.nushell.sh/book/modules/creating_modules.html) and [Overlays](https://www.nushell.sh/book/overlays.html) pages.
 
-**Checked against:** Nushell 0.116.1.
+**Checked against:** Nushell 0.117.0.
 
 Most tests define their modules inline with `module`. Tests that need module files keep them in a folder next to the test (see [CONTRIBUTING.md](../CONTRIBUTING.md)). Paragraphs marked **Open question** describe current behavior that may not be intended, and the questions are listed in [`open-questions.md`](../open-questions.md).
 
@@ -44,9 +44,9 @@ Most tests define their modules inline with `module`. Tests that need module fil
 
 **Defined.** `hide name` removes a command or an alias from the scope from that statement on. `hide` with a module name removes everything imported from it, and `hide module main` removes only the command named after the module. Hiding a name that doesn't exist is not an error. `[modules.hide.command]`
 
-**Defined.** A `hide` inside a nested block, or inside the body of a command, also hides the name after that block, even if the block never runs. `[modules.hide.scope]`
+**Defined.** A `hide` inside a block, or inside the body of a command, hides the name only in that block. `[modules.hide.scope]`
 
-**Changes in 0.117.0** ([#19415](https://github.com/nushell/nushell/pull/19415)): `hide` inside a block hides the name only in that block.
+*Changed in 0.117.0 by [#19415](https://github.com/nushell/nushell/pull/19415).*
 
 ## Overlays
 

@@ -4,6 +4,5 @@
 # ---
 # true
 # ---
-# status: pending
 let x = 1
 not $x == 2

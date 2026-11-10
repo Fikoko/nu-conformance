@@ -2,11 +2,11 @@
 
 Draft rules for the [Variable Scope](https://www.nushell.sh/lang-guide/chapters/variable_scope.html) chapter of the lang guide.
 
-**Checked against:** Nushell 0.116.1.
+**Checked against:** Nushell 0.117.0.
 
 How variables are declared is covered in [Declarations](declarations.md).
 
-Paragraphs marked **Open question** describe current behavior that may not be intended, **Confirmed** paragraphs record behavior the maintainers have confirmed as intended, and **Changes in 0.117.0** notes describe decided changes that aren't released yet. The rules record what `nu` does today, and the questions are listed in [`open-questions.md`](../open-questions.md).
+Paragraphs marked **Open question** describe current behavior that may not be intended, **Confirmed** paragraphs record behavior the maintainers have confirmed as intended, and *Changed in* lines say which release changed a rule, and which pull request decided it. The rules record what `nu` does today, and the questions are listed in [`open-questions.md`](../open-questions.md).
 
 **Defined.** Nushell is lexically scoped. Every block starts a new scope, and a variable is visible from its declaration to the end of the block that contains it, including nested blocks, closures and custom commands. The environment follows different rules. `[scope.intro]`
 
@@ -24,9 +24,9 @@ Paragraphs marked **Open question** describe current behavior that may not be in
 
 **Defined.** A closure can't use a `mut` variable from outside it. That includes closures written as `{|| ...}` or `{ ... }` and those given to commands like `each` and `do`. It is a parse error, `nu::parser::expected_keyword` ("capture of mutable variable"). `[scope.closure.no-mut]`
 
-**Defined.** `where` can read `mut` variables from outside, whether its condition is written as a row condition, a block or a closure with a parameter. `[scope.closure.where]`
+**Defined.** `where` can read `mut` variables from outside, whether its condition is written as a row condition, a block or a closure with a parameter. Assigning to one inside the condition is a parse error, `nu::parser::expected_keyword`. `[scope.closure.where]`
 
-**Changes in 0.117.0** ([#19271](https://github.com/nushell/nushell/pull/19271)): assigning to a `mut` variable inside a `where` condition is a parse error, `nu::parser::expected_keyword`. Reading one is still allowed.
+*Changed in 0.117.0 by [#19271](https://github.com/nushell/nushell/pull/19271).*
 
 **Confirmed** ([#1](https://github.com/Fikoko/nu-conformance/issues/1)): intended: `where` may read `mut` variables. The lang guide's wording is to be fixed.
 

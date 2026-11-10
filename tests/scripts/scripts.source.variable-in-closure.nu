@@ -4,5 +4,4 @@
 # ---
 # let
 # ---
-# status: pending
 do { source zzlet.nu; $zzlet }

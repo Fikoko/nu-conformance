@@ -4,5 +4,4 @@
 # ---
 # false
 # ---
-# status: pending
 not 1 < 2
