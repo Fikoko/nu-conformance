@@ -28,7 +28,7 @@ Most tests define their modules inline with `module`. Tests that need module fil
 
 **Defined.** A spread after the module name, as in `use m ...$names`, is accepted but imports nothing, whether the list is a `let` or a `const`. A spread in place of the module name is a parse error, `nu::parser::missing_positional`. `[modules.use.spread]`
 
-**Open question:** a spread in `use` silently imports nothing. The winnow parser reports it as `nu::parser::export_not_found` instead.
+**Open question:** a spread in `use` silently imports nothing. The winnow parser reports it as `nu::parser::export_not_found` instead. Reported as [nushell/nushell#19514](https://github.com/nushell/nushell/issues/19514).
 
 **Defined.** The module must be defined before the `use` that imports it. Otherwise, or when no module or file of that name exists, it is a parse error, `nu::parser::module_not_found`. `[modules.use.missing]`
 

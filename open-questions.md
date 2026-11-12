@@ -554,6 +554,8 @@ f                      # => Error: nu::shell::external_command
 
 ### U1. A spread in `use` imports nothing
 
+Reported upstream as [nushell/nushell#19514](https://github.com/nushell/nushell/issues/19514).
+
 Rule: [`modules.use.spread`](rules/modules.md)
 
 ```nu
