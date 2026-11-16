@@ -26,10 +26,10 @@ jobs:
     runs-on: ubuntu-latest
     continue-on-error: true
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Check out the winnow branch
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: ${{ env.WINNOW_REPO }}
           ref: ${{ env.WINNOW_REF }}
@@ -71,13 +71,22 @@ jobs:
         if: always()
         continue-on-error: true
         working-directory: nushell/crates/nu-parser/winnow/tools/nushell-harness
+        shell: bash
         run: |
           cargo build --release --bin frontends
+          # Keep going if the harness fails, and report its exit code, so a
+          # crash shows up in the summary instead of an empty section.
+          set +e
+          ./target/release/frontends compare "$GITHUB_WORKSPACE/tests" > "$RUNNER_TEMP/frontends.txt" 2>&1
+          code=$?
+          set -e
           {
             echo
             echo '## Syntax trees (`frontends compare`)'
             echo
+            echo "frontends exited with code $code. Last 60 lines of its output:"
+            echo
             echo '```'
-            ./target/release/frontends compare "$GITHUB_WORKSPACE/tests" 2>&1 | tail -n 60
+            tail -n 60 "$RUNNER_TEMP/frontends.txt"
             echo '```'
           } | tee -a "$GITHUB_STEP_SUMMARY"
