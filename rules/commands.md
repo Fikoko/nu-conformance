@@ -44,6 +44,10 @@ Paragraphs marked **Open question** describe current behavior that may not be in
 
 **Defined.** A default value must be a constant: a literal or a `const` variable. Anything else is a parse error, `nu::parser::non_constant_default_value`. A default that doesn't match the parameter's type is a parse error, `nu::parser::parse_mismatch`. `[commands.params.default-constant]`
 
+**Defined.** A second `= value` after a parameter's default replaces the first, so `def cmd [a = 1 = 2]` gives `a` the default `2`. This applies to positional parameters, flags, closure parameters and `extern` signatures. A type annotation written after the default, as in `[a = "x" : int]`, is ignored, and a default with no parameter before it, as in `[= 1]`, is ignored. `[commands.params.default-once]`
+
+**Changes in 0.118.0** ([#19126](https://github.com/nushell/nushell/pull/19126)): a second default value is a parse error, `nu::parser::error` ("A positional parameter or flag can have at most one default value."). A type annotation after a default, and a default with no parameter, are parse errors, `nu::parser::parse_mismatch`.
+
 **Defined.** `name: type` declares a parameter's type, with or without a space after `:`. An argument of the wrong type is a parse error, `nu::parser::parse_mismatch`. Without a type, a parameter accepts any value. Besides the value types, `number`, `oneof<...>` and `external_arg` can be used; `external_arg` keeps a bare word exactly as written, so `0001` stays a string. An unknown type name is a parse error, `nu::parser::unknown_type`. `[commands.params.types]`
 
 **Defined.** Required positional parameters must come before optional ones, otherwise it is a parse error, `nu::parser::required_after_optional`. A command can have only one rest parameter, otherwise it is a parse error, `nu::parser::multiple_rest_params`. `[commands.params.order]`

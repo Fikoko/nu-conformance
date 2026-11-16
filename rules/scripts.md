@@ -22,6 +22,12 @@ Every test is itself a script run with `nu`, which matters for `main`: when a sc
 
 **Defined.** A `main` command defined in a sourced file becomes the sourcing script's `main`, so `nu` calls it after running the script. `[scripts.source.main]`
 
+## Script arguments
+
+**Defined.** `nu script.nu args...` and `nu -c commands args...` pass the arguments to the script's `main`. Ordinary words reach `main` as strings, and quoted arguments keep their spaces. Some arguments are read as code instead: an argument starting with `--` that contains `;` runs what follows it, a redirection such as `o>` redirects `main`'s output, a spread or range of a variable such as `...$env.PATH` is evaluated, and `=`, `&&` or an unbalanced `)` is a parse error. `[scripts.arguments]`
+
+**Changes in 0.118.0** ([#19486](https://github.com/nushell/nushell/pull/19486)): every argument reaches `main` as a string, and none is read as code.
+
 ## `run`
 
 **Defined.** `run file` runs a script as one stage of a pipeline. A script without `main` is evaluated as a whole, with the pipeline input as `$in`, and its last value is passed on. `[scripts.run.plain]`
