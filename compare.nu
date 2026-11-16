@@ -26,7 +26,7 @@ def main [
         print $"## Default parser vs `($option)`\n"
         print $"Nushell ($version), ($base | length) tests, ($diffs | length) with different results.\n"
         if $diffs != [] {
-            print '| Test | Default parser | `' + $option + '` |'
+            print $"| Test | Default parser | `($option)` |"
             print '|---|---|---|'
             for d in $diffs {
                 print $"| `($d.id)` | (cell $d.status $d.reason) | (cell $d.status_option $d.reason_option) |"
