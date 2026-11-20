@@ -8,7 +8,7 @@ Questions marked **Resolved** have been decided by the maintainers. Once the rel
 
 Questions marked **Answered** describe intended behavior, as confirmed by the maintainers in [#1](https://github.com/Fikoko/nu-conformance/issues/1). Their tests stay as they are. Answers that call for documentation changes are collected under [Documentation fixes](#documentation-fixes).
 
-The questions from S1 to C3 have all been resolved or answered, and so have A1, P1, H1 and R1, in [#19415](https://github.com/nushell/nushell/pull/19415). New questions are added below them as they come up.
+The questions from S1 to C3 have all been resolved or answered, and so have A1, P1, H1 and R1, in [#19415](https://github.com/nushell/nushell/pull/19415). U1 is fixed in [#19598](https://github.com/nushell/nushell/pull/19598), for 0.118.0. New questions are added below them as they come up.
 
 The behavior in the questions below was found in Nushell 0.116.1. The suite now targets 0.117.0.
 
@@ -554,7 +554,7 @@ f                      # => Error: nu::shell::external_command
 
 ### U1. A spread in `use` imports nothing
 
-Reported upstream as [nushell/nushell#19514](https://github.com/nushell/nushell/issues/19514).
+**Resolved in 0.118.0** by [#19598](https://github.com/nushell/nushell/pull/19598), closing [#19514](https://github.com/nushell/nushell/issues/19514): a spread after the module name in `use` or `export use` is a parse error, `nu::parser::wrong_import_pattern`, the same error as a spread inside a member list.
 
 Rule: [`modules.use.spread`](rules/modules.md)
 
